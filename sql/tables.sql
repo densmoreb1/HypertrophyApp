@@ -1,3 +1,4 @@
+drop database if exists fitness;
 create database if not exists fitness;
 
 use fitness;
@@ -5,7 +6,8 @@ use fitness;
 create table if not exists exercises (
 	id int auto_increment primary key,
 	name varchar(100),
-	muscle_group varchar(100)
+	muscle_group varchar(100),
+	unique (name)
 );
 
 create table if not exists users (
@@ -32,6 +34,19 @@ create table if not exists workouts (
 	foreign key (meso_id) references mesos(id)
 );
 
--- INSERT INTO users (name) VALUES ('brandon');
--- INSERT INTO exercises (name, muscle_group) VALUES ('Incline Bench Press', 'Chest');
--- INSERT INTO exercises (name, muscle_group) VALUES ('Smith Machine Row', 'Back');
+INSERT INTO users (name) VALUES ('brandon');
+
+INSERT INTO exercises (name, muscle_group) VALUES ('Incline Bench Press', 'Chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('Pec Dec', 'Chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('Machine Chest Press', 'Chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('Incline Dumbbell Press', 'Chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('Low Incline Dumbbell Press', 'Chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('Smith Machine Row', 'Back');
+INSERT INTO exercises (name, muscle_group) VALUES ('Deadlift', 'Back');
+INSERT INTO exercises (name, muscle_group) VALUES ('Machine T-Bar Row', 'Back');
+INSERT INTO exercises (name, muscle_group) VALUES ('Assisted Pull-up', 'Back');
+INSERT INTO exercises (name, muscle_group) VALUES ('Chest Supported Row', 'Back');
+INSERT INTO exercises (name, muscle_group) VALUES ('Freemotion Curl', 'Biceps');
+INSERT INTO exercises (name, muscle_group) VALUES ('Leg Press', 'Quads');
+INSERT INTO exercises (name, muscle_group) VALUES ('Calf Press Machine', 'Calves');
+INSERT INTO exercises (name, muscle_group) VALUES ('Leg Press Calves', 'Calves');
