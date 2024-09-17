@@ -5,18 +5,18 @@ st.set_page_config(page_title='Create Meso', layout='wide')
 
 conn = MySQLDatabase('root', 'remote22', '172.17.0.2', 'fitness')
 
-groups_sql = conn.execute_query('SELECT DISTINCT muscle_group FROM exercises')
+groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = []
 
 for g in groups_sql:
     muscle_groups.append(g[0])
 
-exercise_query = 'SELECT name FROM exercises WHERE muscle_group = %s'
+exercise_query = 'select name from exercises where muscle_group = %s'
 
 st.write('# Create Meso')
 
-your_name = st.text_input('Your Name')
-name = st.text_input('Name of Meso')
+your_name = st.text_input('Your Name').lower()
+name = st.text_input('Name of Meso').lower()
 
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
 cols = st.columns(days)

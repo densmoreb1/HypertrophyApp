@@ -40,17 +40,17 @@ create table if not exists workouts (
 
 INSERT INTO users (name) VALUES ('brandon');
 
-INSERT INTO exercises (name, muscle_group) VALUES ('Incline Bench Press', 'Chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('Pec Dec', 'Chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('Machine Chest Press', 'Chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('Incline Dumbbell Press', 'Chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('Low Incline Dumbbell Press', 'Chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('Smith Machine Row', 'Back');
-INSERT INTO exercises (name, muscle_group) VALUES ('Deadlift', 'Back');
-INSERT INTO exercises (name, muscle_group) VALUES ('Machine T-Bar Row', 'Back');
-INSERT INTO exercises (name, muscle_group) VALUES ('Assisted Pull-up', 'Back');
-INSERT INTO exercises (name, muscle_group) VALUES ('Chest Supported Row', 'Back');
-INSERT INTO exercises (name, muscle_group) VALUES ('Freemotion Curl', 'Biceps');
-INSERT INTO exercises (name, muscle_group) VALUES ('Leg Press', 'Quads');
-INSERT INTO exercises (name, muscle_group) VALUES ('Calf Press Machine', 'Calves');
-INSERT INTO exercises (name, muscle_group) VALUES ('Leg Press Calves', 'Calves');
+INSERT INTO exercises (name, muscle_group) VALUES ('incline bench press', 'chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('pec dec', 'chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('machine chest press', 'chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('incline dumbbell press', 'chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('low incline dumbbell press', 'chest');
+INSERT INTO exercises (name, muscle_group) VALUES ('smith machine row', 'back');
+INSERT INTO exercises (name, muscle_group) VALUES ('deadlift', 'back');
+INSERT INTO exercises (name, muscle_group) VALUES ('machine t-bar row', 'back');
+INSERT INTO exercises (name, muscle_group) VALUES ('assisted pull-up', 'back');
+INSERT INTO exercises (name, muscle_group) VALUES ('chest supported row', 'back');
+INSERT INTO exercises (name, muscle_group) VALUES ('freemotion curl', 'biceps');
+INSERT INTO exercises (name, muscle_group) VALUES ('leg press', 'quads');
+INSERT INTO exercises (name, muscle_group) VALUES ('calf press machine', 'calves');
+INSERT INTO exercises (name, muscle_group) VALUES ('leg press calves', 'calves');

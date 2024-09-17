@@ -51,18 +51,20 @@
     - `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id`
 - When creating on machine, use the service name in the docker compose file for address
 
-## TODO
+## TODO for Release 1.0
 
-- Insert in all exercises
-    - Include in a sql script
-- Create a way to insert new exercises
-    - A page with text boxes
-- Create the create meso cycle page
-    - Pull from the database
-    - Button at the end to save meso to the database
-- Design what the meso table will be inserting
+- ~~SQL script for basic entries~~
+- ~~Create the create meso cycle page~~
+- ~~Meso page needs to pull from database~~
+- ~~Design what the meso table will be inserting~~
+- ~~Change the insert to all lower case~~
+- ~~Change the create meso page to lower all names~~
+- ~~Create a way to insert new exercises~~
 - Create some kinda of text to show if the meso was created
 - Design what the current workout will be pulling from
 
+<<<<<<< HEAD
 
 >>>>>>> 930d56e (adding readme)
+=======
+>>>>>>> b71bb0c (lowered text inputs and added exercise page)
