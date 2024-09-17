@@ -39,7 +39,7 @@ class MySQLDatabase:
                 self.connection.commit()
                 return self.cursor.rowcount
         except Error as e:
-            print(f"Error executing query: {e}")
+            return (f"Error executing query: {e}")
 
     def close(self):
         """Close the cursor and connection."""

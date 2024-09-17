@@ -19,9 +19,13 @@ create table if not exists mesos (
 	id int auto_increment primary key,
 	name varchar(100),
 	user_id int,
-	date_started date,
-	date_ended date,
-	foreign key (user_id) references users(id)
+	exercise_id int,
+	day_id int,
+	date_started datetime,
+	date_ended datetime,
+	foreign key (user_id) references users(id),
+	foreign key (exercise_id) references exercises(id),
+	unique (name, user_id, exercise_id, day_id)
 );
 
 create table if not exists workouts (

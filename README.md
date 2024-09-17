@@ -38,19 +38,9 @@
 ### Design the Database
 
 - Meso table
-    - Meso name
-    - Exercise
-    - Date started
-    - Date ended
-    - User
 - Exercises table
 - Users 
 - Workout table
-    - Exercise x how many sets
-    - Reps x how many sets
-    - Date
-    - Meso
-    - User
 
 ### Create the database
 
@@ -70,5 +60,9 @@
 - Create the create meso cycle page
     - Pull from the database
     - Button at the end to save meso to the database
+- Design what the meso table will be inserting
+- Create some kinda of text to show if the meso was created
+- Design what the current workout will be pulling from
+
 
 >>>>>>> 930d56e (adding readme)
