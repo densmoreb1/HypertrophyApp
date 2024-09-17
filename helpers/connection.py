@@ -3,12 +3,12 @@ from mysql.connector import Error
 
 
 class MySQLDatabase:
-    def __init__(self, user, password, host, database):
+    def __init__(self):
         self.config = {
-            'user': user,
-            'password': password,
-            'host': host,
-            'database': database
+            'user': 'root',
+            'password': 'remote22',
+            'host': '172.17.0.2',
+            'database': 'fitness'
         }
         self.connection = None
         self.cursor = None

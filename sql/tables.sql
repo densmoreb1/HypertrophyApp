@@ -21,8 +21,8 @@ create table if not exists mesos (
 	user_id int,
 	exercise_id int,
 	day_id int,
-	date_started datetime,
-	date_ended datetime,
+	order_id int,
+	date_created datetime,
 	foreign key (user_id) references users(id),
 	foreign key (exercise_id) references exercises(id),
 	unique (name, user_id, exercise_id, day_id)

@@ -60,11 +60,17 @@
 - ~~Change the insert to all lower case~~
 - ~~Change the create meso page to lower all names~~
 - ~~Create a way to insert new exercises~~
-- Create some kinda of text to show if the meso was created
-- Design what the current workout will be pulling from
+- Change the create meso to capture the order of exercises
+- Create the current workout page
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 >>>>>>> 930d56e (adding readme)
 =======
 >>>>>>> b71bb0c (lowered text inputs and added exercise page)
+=======
+### Future
+
+- Allow for multiple users
+>>>>>>> 03c58fd (more work!)

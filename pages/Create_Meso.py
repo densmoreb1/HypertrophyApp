@@ -2,8 +2,7 @@ from helpers.connection import MySQLDatabase
 import streamlit as st
 
 st.set_page_config(page_title='Create Meso', layout='wide')
-
-conn = MySQLDatabase('root', 'remote22', '172.17.0.2', 'fitness')
+conn = MySQLDatabase()
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = []
@@ -11,17 +10,15 @@ muscle_groups = []
 for g in groups_sql:
     muscle_groups.append(g[0])
 
-exercise_query = 'select name from exercises where muscle_group = %s'
-
 st.write('# Create Meso')
 
-your_name = st.text_input('Your Name').lower()
 name = st.text_input('Name of Meso').lower()
 
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
 cols = st.columns(days)
 
 meso = {}
+exercise_query = 'select name from exercises where muscle_group = %s'
 
 for i in range(len(cols)):
     if days >= i:
@@ -56,25 +53,20 @@ from fitness.exercises
 where name = %s
 '''
 
-user_id_sql = '''
-select id
-from fitness.users
-where name = %s
-'''
-
 insert_sql = '''
 insert into fitness.mesos
-(name, user_id, exercise_id, day_id, date_started)
-values (%s, %s, %s, %s, now())
+(name, user_id, exercise_id, day_id, order_id, date_created)
+values (%s, %s, %s, %s, %s, now())
 '''
 
-if result:
-    user_id = conn.execute_query(user_id_sql, (your_name, ))[0][0]
+if result and name != '':
 
     for key, value in meso.items():
-        for i in value:
-            exercise_id = conn.execute_query(exercise_id_sql, (i,))[0][0]
-            res = conn.execute_query(insert_sql,
-                                     (name, user_id, exercise_id, key,))
+        for i in range(len(value)):
+            exercise_id = conn.execute_query(
+                exercise_id_sql, (value[i],))[0][0]
+            res = conn.execute_query(
+                insert_sql, (name, 1, exercise_id, key, i,))
 
-        print(res)
+elif result and name == '':
+    st.warning('Enter name', icon="⚠️")
