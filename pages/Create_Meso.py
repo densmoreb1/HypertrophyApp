@@ -5,10 +5,7 @@ st.set_page_config(page_title='Create Meso', layout='wide')
 conn = MySQLDatabase()
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
-muscle_groups = []
-
-for g in groups_sql:
-    muscle_groups.append(g[0])
+muscle_groups = [g[0] for g in groups_sql]
 
 st.write('# Create Meso')
 
@@ -35,9 +32,7 @@ for i in range(len(cols)):
                                       (muscle_groups),
                                       key=f'muscle{i, r}')
                 exercise_sql = conn.execute_query(exercise_query, (muscle,))
-                exercise_selection = []
-                for e in exercise_sql:
-                    exercise_selection.append(e[0])
+                exercise_selection = [e[0] for e in exercise_sql]
                 exercise = st.selectbox(
                     'Exercise', (exercise_selection), key=f'exercise{i, r}')
 
@@ -47,13 +42,13 @@ for i in range(len(cols)):
 
 result = st.button('Create Meso')
 
-exercise_id_sql = '''
+exercise_id_query = '''
 select id
 from fitness.exercises
 where name = %s
 '''
 
-insert_sql = '''
+insert_query = '''
 insert into fitness.mesos
 (name, user_id, exercise_id, day_id, order_id, date_created)
 values (%s, %s, %s, %s, %s, now())
@@ -64,9 +59,9 @@ if result and name != '':
     for key, value in meso.items():
         for i in range(len(value)):
             exercise_id = conn.execute_query(
-                exercise_id_sql, (value[i],))[0][0]
+                exercise_id_query, (value[i],))[0][0]
             res = conn.execute_query(
-                insert_sql, (name, 1, exercise_id, key, i,))
+                insert_query, (name, 1, exercise_id, key, i,))
 
 elif result and name == '':
     st.warning('Enter name', icon="⚠️")

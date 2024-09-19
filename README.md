@@ -60,7 +60,7 @@
 - ~~Change the insert to all lower case~~
 - ~~Change the create meso page to lower all names~~
 - ~~Create a way to insert new exercises~~
-- Change the create meso to capture the order of exercises
+- ~~Change the create meso to capture the order of exercises~~
 - Create the current workout page
 
 <<<<<<< HEAD
