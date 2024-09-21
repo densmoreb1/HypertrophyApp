@@ -19,6 +19,7 @@ create table if not exists mesos (
 	id int auto_increment primary key,
 	name varchar(100),
 	user_id int,
+	completed_id int,
 	set_id int,
 	reps int,
 	weight numeric(15, 1),

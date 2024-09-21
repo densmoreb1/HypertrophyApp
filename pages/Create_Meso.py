@@ -55,9 +55,9 @@ where name = %s
 
 insert_query = '''
 insert into fitness.mesos
-(name, user_id, set_id, reps, weight, order_id
+(name, user_id, completed_id, set_id, reps, weight, order_id
 , exercise_id, day_id, week_id, date_created)
-values (%s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
 '''
 
 if result and name != '':
@@ -69,6 +69,6 @@ if result and name != '':
                     exercise_id_query, (value[order_id],))[0][0]
                 res = conn.execute_query(
                     insert_query,
-                    (name, 1, 0, 0, 0, order_id, exercise_id, day_id, week_id,)
+                    (name, 1, 0, 0, 0, 0, order_id,
+                     exercise_id, day_id, week_id,)
                 )
-        print(res)
