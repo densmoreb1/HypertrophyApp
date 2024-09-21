@@ -19,23 +19,18 @@ create table if not exists mesos (
 	id int auto_increment primary key,
 	name varchar(100),
 	user_id int,
+	set_id int,
+	reps int,
+	weight numeric(15, 1),
+	order_id int,
 	exercise_id int,
 	day_id int,
-	order_id int,
+	week_id int,
 	date_created datetime,
+	date_completed datetime,
 	foreign key (user_id) references users(id),
 	foreign key (exercise_id) references exercises(id),
-	unique (name, user_id, exercise_id, day_id)
-);
-
-create table if not exists workouts (
-	id int auto_increment primary key,
-	exercise_id int,
-	meso_id int, 
-	reps int,
-	date_finished date,
-	foreign key (exercise_id) references exercises(id),
-	foreign key (meso_id) references mesos(id)
+	unique (name, user_id, exercise_id, day_id, week_id, set_id)
 );
 
 INSERT INTO users (name) VALUES ('brandon');

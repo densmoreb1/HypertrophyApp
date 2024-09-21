@@ -5,15 +5,10 @@ st.set_page_config(page_title='Current Workout', layout='centered')
 conn = MySQLDatabase()
 
 mesos_sql = conn.execute_query('select distinct name from mesos')
-mesos = []
-
-for g in mesos_sql:
-    mesos.append(g[0])
+mesos = [g[0] for g in mesos_sql]
 
 meso_name = st.selectbox('Mesos', mesos)
-workout_date = st.date_input('Pick a date')
 
-# get last workout sets and reps for exercise
-# if exists then use this to populate the page, if not use mesos
-last_workout_query = 'select'
-# loop for each exercise adding a set or reps
+# select from table and populate
+# maybe use streamlit tabs
+# create an add set button that will insert sets

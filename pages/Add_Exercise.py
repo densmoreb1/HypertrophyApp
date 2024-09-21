@@ -3,7 +3,7 @@ import streamlit as st
 
 st.write('# Add Exercise')
 
-conn = MySQLDatabase('root', 'remote22', '172.17.0.2', 'fitness')
+conn = MySQLDatabase()
 
 name = st.text_input('Exercise Name').lower()
 group = st.text_input('Muscle Group').lower()

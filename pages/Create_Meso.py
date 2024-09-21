@@ -6,16 +6,22 @@ conn = MySQLDatabase()
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
+meso = {}
+exercise_query = 'select name from exercises where muscle_group = %s'
 
 st.write('# Create Meso')
 
 name = st.text_input('Name of Meso').lower()
 
+weeks = st.selectbox('Weeks', (4, 5, 6))
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
-cols = st.columns(days)
 
-meso = {}
-exercise_query = 'select name from exercises where muscle_group = %s'
+result = st.button('Create Meso')
+
+if result and name == '':
+    st.warning('Enter name', icon="⚠️")
+
+cols = st.columns(days)
 
 for i in range(len(cols)):
     if days >= i:
@@ -40,7 +46,6 @@ for i in range(len(cols)):
 
             meso[i] = final_exercise_list
 
-result = st.button('Create Meso')
 
 exercise_id_query = '''
 select id
@@ -50,18 +55,20 @@ where name = %s
 
 insert_query = '''
 insert into fitness.mesos
-(name, user_id, exercise_id, day_id, order_id, date_created)
-values (%s, %s, %s, %s, %s, now())
+(name, user_id, set_id, reps, weight, order_id
+, exercise_id, day_id, week_id, date_created)
+values (%s, %s, %s, %s, %s, %s, %s, %s, %s, now())
 '''
 
 if result and name != '':
 
-    for key, value in meso.items():
-        for i in range(len(value)):
-            exercise_id = conn.execute_query(
-                exercise_id_query, (value[i],))[0][0]
-            res = conn.execute_query(
-                insert_query, (name, 1, exercise_id, key, i,))
-
-elif result and name == '':
-    st.warning('Enter name', icon="⚠️")
+    for week_id in range(weeks):
+        for day_id, value in meso.items():
+            for order_id in range(len(value)):
+                exercise_id = conn.execute_query(
+                    exercise_id_query, (value[order_id],))[0][0]
+                res = conn.execute_query(
+                    insert_query,
+                    (name, 1, 0, 0, 0, order_id, exercise_id, day_id, week_id,)
+                )
+        print(res)
