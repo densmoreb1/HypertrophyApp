@@ -1,7 +1,7 @@
 from helpers.connection import MySQLDatabase
 import streamlit as st
 
-st.set_page_config(page_title='Add Exercise')
+st.set_page_config(page_title='Add Exercise', layout='centered')
 st.write('# Add Exercise')
 
 conn = MySQLDatabase()
@@ -12,7 +12,7 @@ group = st.text_input('Muscle Group').lower()
 result = st.button('Create Exercise')
 
 insert_sql = '''
-insert into fitness.exercises (name, muscle_group)
+insert into exercises (name, muscle_group)
 values (%s, %s)
 '''
 

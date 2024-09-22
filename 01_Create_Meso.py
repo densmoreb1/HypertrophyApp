@@ -49,13 +49,13 @@ for i in range(len(cols)):
 
 exercise_id_query = '''
 select id
-from fitness.exercises
+from exercises
 where name = %s
 '''
 
 insert_query = '''
-insert into fitness.mesos
-(name, user_id, completed_id, set_id, reps, weight, order_id
+insert into mesos
+(name, user_id, completed, set_id, reps, weight, order_id
 , exercise_id, day_id, week_id, date_created)
 values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
 '''

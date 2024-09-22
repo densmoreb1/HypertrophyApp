@@ -56,18 +56,6 @@
 - Create the current workout page
 - Pick a day, then it shows what the workout is or was on that day
 - Add a charts page to see progress of exercises over time
-- ~~SQL script for basic entries~~
-- ~~Create the create meso cycle page~~
-- ~~Meso page needs to pull from database~~
-- ~~Design what the meso table will be inserting~~
-- ~~Change the insert to all lower case~~
-- ~~Change the create meso page to lower all names~~
-- ~~Create a way to insert new exercises~~
-- ~~Change the create meso to capture the order of exercises~~
-- ~~Add a select box for however many weeks~~
-- ~~Add the sets, reps, and weight to the Meso table~~
-- ~~Add day completed to the Meso table~~
-- ~~Multiply the days by week (insert however many times 0 out the reps)~~
 
 <<<<<<< HEAD
 <<<<<<< HEAD

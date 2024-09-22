@@ -19,7 +19,7 @@ create table if not exists mesos (
 	id int auto_increment primary key,
 	name varchar(100),
 	user_id int,
-	completed_id int,
+	completed int,
 	set_id int,
 	reps int,
 	weight numeric(15, 1),
@@ -32,6 +32,12 @@ create table if not exists mesos (
 	foreign key (user_id) references users(id),
 	foreign key (exercise_id) references exercises(id),
 	unique (name, user_id, exercise_id, day_id, week_id, set_id)
+);
+
+create table if not exists ranking (
+	id int auto_increment primary key,
+	sorness int,
+	pump int
 );
 
 INSERT INTO users (name) VALUES ('brandon');
