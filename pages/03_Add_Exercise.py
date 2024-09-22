@@ -1,6 +1,7 @@
 from helpers.connection import MySQLDatabase
 import streamlit as st
 
+st.set_page_config(page_title='Add Exercise')
 st.write('# Add Exercise')
 
 conn = MySQLDatabase()
