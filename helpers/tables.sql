@@ -42,6 +42,7 @@ create table if not exists ranking (
 );
 
 INSERT INTO users (name) VALUES ('brandon');
+INSERT INTO users (name) VALUES ('ivy');
 
 INSERT INTO exercises (name, muscle_group) VALUES ('incline bench press', 'chest');
 INSERT INTO exercises (name, muscle_group) VALUES ('pec dec', 'chest');

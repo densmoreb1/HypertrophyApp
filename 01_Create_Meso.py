@@ -12,6 +12,7 @@ exercise_query = 'select name from exercises where muscle_group = %s'
 st.write('# Create Meso')
 
 name = st.text_input('Name of Meso').lower()
+your_name = st.text_input('Your Name').lower()
 
 weeks = st.selectbox('Weeks', (4, 5, 6))
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
@@ -53,6 +54,12 @@ from exercises
 where name = %s
 '''
 
+user_id_sql = '''
+select id
+from fitness.users
+where name = %s
+'''
+
 meso_id_query = '''
 select max(meso_id)
 from mesos
@@ -67,6 +74,7 @@ values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
 
 if result and name != '':
 
+    user_id = conn.execute_query(user_id_sql, (your_name,))[0][0]
     meso_id = conn.execute_query(meso_id_query)[0][0]
     if meso_id is None:
         meso_id = 0
@@ -78,6 +86,6 @@ if result and name != '':
                     exercise_id_query, (value[order_id],))[0][0]
                 res = conn.execute_query(
                     insert_query,
-                    (meso_id, name, 1, 0, 0, 0, 0, order_id,
+                    (meso_id, name, user_id, 0, 0, 0, 0, order_id,
                      exercise_id, day_id, week_id,)
                 )

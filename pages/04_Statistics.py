@@ -28,12 +28,9 @@ sets_sql = conn.execute_query(sets_query)
 
 df = pd.DataFrame(sets_sql, columns=['muscle_group', 'set_count', 'week'])
 
-st.write(df)
-
 for muscle in muscle_groups:
     st.write(muscle.capitalize())
     df = df[df['muscle_group'] == muscle]
-    st.write(df)
     st.line_chart(df, x='week', y='set_count')
 
 # view volumne of exercise over each workout
