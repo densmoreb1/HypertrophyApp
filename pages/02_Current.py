@@ -9,6 +9,9 @@ mesos = [g[0] for g in mesos_sql]
 
 meso_name = st.selectbox('Mesos', mesos)
 
+meso_id = conn.execute_query('select meso_id from mesos where name = %s',
+                             (meso_name,))[0][0]
+
 weeks_query = '''
 select distinct week_id from mesos where name = %s
 '''
@@ -56,9 +59,9 @@ and name = %s
 
 add_set_query = '''
 insert into fitness.mesos
-(name, user_id, completed, set_id, reps, weight, order_id
+(meso_id, name, user_id, completed, set_id, reps, weight, order_id
 , exercise_id, day_id, week_id, date_created)
-values (%s, 1, 0, %s, %s, %s, %s, %s, %s, %s, now())
+values (%s, %s, 1, 0, %s, %s, %s, %s, %s, %s, %s, now())
 '''
 
 
@@ -86,16 +89,6 @@ for i in range(len(day_tabs)):
                     st.write(f'Set: {sets+1}')
                 with cols[1]:
                     if completed == 0:
-                        reps = st.number_input('Reps',
-                                               label_visibility='collapsed',
-                                               value=None,
-                                               placeholder='Reps',
-                                               key=f'reps{exercise, i, j}',
-                                               step=1)
-                    else:
-                        st.write(f'Reps: {reps}')
-                with cols[2]:
-                    if completed == 0:
                         weight = st.number_input('Weight',
                                                  label_visibility='collapsed',
                                                  value=None,
@@ -104,6 +97,16 @@ for i in range(len(day_tabs)):
                                                  step=1)
                     else:
                         st.write(f'Weight: {weight}')
+                with cols[2]:
+                    if completed == 0:
+                        reps = st.number_input('Reps',
+                                               label_visibility='collapsed',
+                                               value=None,
+                                               placeholder='Reps',
+                                               key=f'reps{exercise, i, j}',
+                                               step=1)
+                    else:
+                        st.write(f'Reps: {reps}')
                 with cols[3]:
                     if completed == 0:
                         c = st.button('Complete',
@@ -118,7 +121,7 @@ for i in range(len(day_tabs)):
 
             add_set = st.button('Add set', key=f'{exercise, i}')
             if add_set:
-                conn.execute_query(add_set_query,
-                                   (meso_name, sets+1, weight, reps+1,
-                                    order_id, exercise_id, i, week)
-                                   )
+                print(conn.execute_query(add_set_query,
+                                         (meso_id, meso_name, sets+1, weight, reps,
+                                          order_id, exercise_id, i, week)
+                                         ))

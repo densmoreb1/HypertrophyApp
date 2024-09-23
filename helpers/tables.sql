@@ -17,6 +17,7 @@ create table if not exists users (
 
 create table if not exists mesos (
 	id int auto_increment primary key,
+	meso_id int,
 	name varchar(100),
 	user_id int,
 	completed int,
@@ -31,7 +32,7 @@ create table if not exists mesos (
 	date_completed datetime,
 	foreign key (user_id) references users(id),
 	foreign key (exercise_id) references exercises(id),
-	unique (name, user_id, exercise_id, day_id, week_id, set_id)
+	unique (meso_id, name, user_id, exercise_id, day_id, week_id, set_id)
 );
 
 create table if not exists ranking (
