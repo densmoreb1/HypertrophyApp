@@ -7,7 +7,7 @@ class MySQLDatabase:
         self.config = {
             'user': 'root',
             'password': 'remote22',
-            'host': '172.17.0.2',
+            'host': 'mysql',
             'database': 'fitness'
         }
         self.connection = None

@@ -1,0 +1,31 @@
+services:
+  app:
+    image: python:latest
+    ports:
+      - "8501:8501"  # Map Streamlit's default port
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash -c "pip install --no-cache-dir -r requirements.txt && streamlit run 01_Create_Meso.py --server.port=8501 --server.address=0.0.0.0"
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=remote22
+      - MYSQL_DATABASE=fitness
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: remote22
+      MYSQL_DATABASE: test_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./helpers/tables.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init script
+    ports:
+      - "3601:3601"
+
+volumes:
+  mysql_data:
