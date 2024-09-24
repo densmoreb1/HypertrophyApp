@@ -1,6 +1,7 @@
 services:
   app:
     image: python:latest
+    restart: always
     ports:
       - "8501:8501"  # Map Streamlit's default port
     volumes:
