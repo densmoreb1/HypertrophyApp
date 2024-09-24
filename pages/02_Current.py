@@ -4,11 +4,17 @@ import streamlit as st
 st.set_page_config(page_title='Current Workout', layout='centered')
 conn = MySQLDatabase()
 
-mesos_sql = conn.execute_query('select distinct name from mesos')
+user_sql = conn.execute_query('select distinct name from users')
+users = [u[0] for u in user_sql]
+
+user_name = st.selectbox('Name', users)
+user_id = conn.execute_query('select id from users where name = %s',
+                             (user_name,))[0][0]
+
+mesos_query = 'select distinct name from mesos where user_id = %s'
+mesos_sql = conn.execute_query(mesos_query, (user_id,))
 mesos = [g[0] for g in mesos_sql]
-
 meso_name = st.selectbox('Mesos', mesos)
-
 meso_id = conn.execute_query('select meso_id from mesos where name = %s',
                              (meso_name,))[0][0]
 
@@ -61,9 +67,8 @@ add_set_query = '''
 insert into fitness.mesos
 (meso_id, name, user_id, completed, set_id, reps, weight, order_id
 , exercise_id, day_id, week_id, date_created)
-values (%s, %s, 1, 0, %s, %s, %s, %s, %s, %s, %s, now())
+values (%s, %s, %s, 0, %s, %s, %s, %s, %s, %s, %s, now())
 '''
-
 
 for i in range(len(day_tabs)):
     with day_tabs[i]:
@@ -122,6 +127,7 @@ for i in range(len(day_tabs)):
             add_set = st.button('Add set', key=f'{exercise, i}')
             if add_set:
                 print(conn.execute_query(add_set_query,
-                                         (meso_id, meso_name, sets+1, weight, reps,
+                                         (meso_id, meso_name, user_id,
+                                          sets+1, weight, reps,
                                           order_id, exercise_id, i, week)
                                          ))

@@ -7,24 +7,32 @@ st.write('# Statistics')
 
 conn = MySQLDatabase()
 
+user_sql = conn.execute_query('select distinct name from users')
+users = [u[0] for u in user_sql]
+
+user_name = st.selectbox('Name', users)
+user_id = conn.execute_query('select id from users where name = %s',
+                             (user_name,))[0][0]
+
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
-
 muscle_groups = st.multiselect('Muscle Groups', muscle_groups)
 
 sets_query = '''
-SELECT
+select
     e.muscle_group,
-    COUNT(m.set_id) AS set_count,
-    ROW_NUMBER() OVER (PARTITION BY e.muscle_group, m.meso_id ORDER BY m.week_id) AS week_rank
-FROM mesos m
-JOIN exercises e ON m.exercise_id = e.id
+    count(m.set_id) AS set_count,
+    row_number() over (partition by e.muscle_group,
+                        m.meso_id order by m.week_id) AS week_rank
+from mesos m
+inner join exercises e on m.exercise_id = e.id
+inner join users u on m.user_id = u.id
 where m.completed = 1
-GROUP BY e.muscle_group, m.meso_id, m.week_id
+    and u.id = %s
+group by e.muscle_group, m.meso_id, m.week_id
 '''
 
-# for each muscle make a plot for sets per week orderded by comeplted time
-sets_sql = conn.execute_query(sets_query)
+sets_sql = conn.execute_query(sets_query, (user_id,))
 
 df = pd.DataFrame(sets_sql, columns=['muscle_group', 'set_count', 'week'])
 

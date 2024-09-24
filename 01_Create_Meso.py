@@ -6,17 +6,20 @@ conn = MySQLDatabase()
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
-meso = {}
 exercise_query = 'select name from exercises where muscle_group = %s'
 
 st.write('# Create Meso')
 
-name = st.text_input('Name of Meso').lower()
-your_name = st.text_input('Your Name').lower()
+user_sql = conn.execute_query('select distinct name from users')
+users = [u[0] for u in user_sql]
 
+user_name = st.selectbox('Name', users)
+user_id = conn.execute_query('select id from users where name = %s',
+                             (user_name,))[0][0]
+
+name = st.text_input('Name of Meso').lower()
 weeks = st.selectbox('Weeks', (4, 5, 6))
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
-
 result = st.button('Create Meso')
 
 if result and name == '':
@@ -24,6 +27,7 @@ if result and name == '':
 
 cols = st.columns(days)
 
+meso = {}
 for i in range(len(cols)):
     if days >= i:
         with cols[i]:
@@ -54,12 +58,6 @@ from exercises
 where name = %s
 '''
 
-user_id_sql = '''
-select id
-from fitness.users
-where name = %s
-'''
-
 meso_id_query = '''
 select max(meso_id)
 from mesos
@@ -74,7 +72,6 @@ values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
 
 if result and name != '':
 
-    user_id = conn.execute_query(user_id_sql, (your_name,))[0][0]
     meso_id = conn.execute_query(meso_id_query)[0][0]
     if meso_id is None:
         meso_id = 0
