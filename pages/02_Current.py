@@ -99,7 +99,7 @@ for i in range(len(day_tabs)):
                                                  value=None,
                                                  placeholder='Weight',
                                                  key=f'weight{exercise, i, j}',
-                                                 step=1)
+                                                 step=.5)
                     else:
                         st.write(f'Weight: {weight}')
                 with cols[2]:
@@ -126,8 +126,8 @@ for i in range(len(day_tabs)):
 
             add_set = st.button('Add set', key=f'{exercise, i}')
             if add_set:
-                print(conn.execute_query(add_set_query,
-                                         (meso_id, meso_name, user_id,
-                                          sets+1, weight, reps,
-                                          order_id, exercise_id, i, week)
-                                         ))
+                conn.execute_query(add_set_query,
+                                   (meso_id, meso_name, user_id,
+                                    sets+1, weight, reps,
+                                    order_id, exercise_id, i, week)
+                                   )

@@ -34,10 +34,9 @@ group by e.muscle_group, m.meso_id, m.week_id
 
 sets_sql = conn.execute_query(sets_query, (user_id,))
 
-df = pd.DataFrame(sets_sql, columns=['muscle_group', 'set_count', 'week'])
-
 for muscle in muscle_groups:
     st.write(muscle.capitalize())
+    df = pd.DataFrame(sets_sql, columns=['muscle_group', 'set_count', 'week'])
     df = df[df['muscle_group'] == muscle]
     st.bar_chart(df, x='week', y='set_count')
 
