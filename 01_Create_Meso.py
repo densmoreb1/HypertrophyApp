@@ -31,7 +31,7 @@ meso = {}
 for i in range(len(cols)):
     if days >= i:
         with cols[i]:
-            st.write(f'### Day {i+1}')
+            st.write(f'### Day {i + 1}')
 
             exercises_per = st.selectbox(
                 'How many exercises?', (1, 2, 3, 4, 5, 6), key=f'per{i}')
@@ -39,7 +39,7 @@ for i in range(len(cols)):
             final_exercise_list = []
 
             for r in range(exercises_per):
-                muscle = st.selectbox(f'#### Muscle Group {r+1}',
+                muscle = st.selectbox(f'#### Muscle Group {r + 1}',
                                       (muscle_groups),
                                       key=f'muscle{i, r}')
                 exercise_sql = conn.execute_query(exercise_query, (muscle,))
@@ -75,6 +75,8 @@ if result and name != '':
     meso_id = conn.execute_query(meso_id_query)[0][0]
     if meso_id is None:
         meso_id = 0
+    else:
+        meso_id += 1
 
     for week_id in range(weeks):
         for day_id, value in meso.items():

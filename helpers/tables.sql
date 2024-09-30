@@ -91,15 +91,15 @@ insert into exercises (name, muscle_group) values ('barbell squat','quads');
 insert into exercises (name, muscle_group) values ('walking lunges','quads');
 insert into exercises (name, muscle_group) values ('sissy squat','quads');
 
-select concat(
-	'insert into exercises (name, muscle_group) values (',
-	'''',
-	name,
-	'''',
-	',',
-	'''',
-	muscle_group,
-	'''',
-	');'
-	)
-from fitness.exercises;
+--select concat(
+--	'insert into exercises (name, muscle_group) values (',
+--	'''',
+--	name,
+--	'''',
+--	',',
+--	'''',
+--	muscle_group,
+--	'''',
+--	');'
+--	)
+--from fitness.exercises;

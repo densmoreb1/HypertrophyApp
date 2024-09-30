@@ -54,6 +54,7 @@
 ## TODO for Release 1.0
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 - Create the current workout page
 - Pick a day, then it shows what the workout is or was on that day
 - Add a charts page to see progress of exercises over time
@@ -73,3 +74,7 @@
 - Pre populate next week workout based on prev
 - Fix the stats page to not reset df
 >>>>>>> 70a867b (Update README.md)
+=======
+- Add a complete button to do an full insert
+- Pre populate next week workout based on prev
+>>>>>>> fb71e46 (small fixes)
