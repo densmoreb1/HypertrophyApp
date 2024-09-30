@@ -14,6 +14,7 @@ user_id = conn.execute_query('select id from users where name = %s',
 mesos_query = 'select distinct name from mesos where user_id = %s'
 mesos_sql = conn.execute_query(mesos_query, (user_id,))
 mesos = [g[0] for g in mesos_sql]
+
 meso_name = st.selectbox('Mesos', mesos)
 meso_id = conn.execute_query('select meso_id from mesos where name = %s',
                              (meso_name,))[0][0]
@@ -22,7 +23,7 @@ weeks_query = '''
 select distinct week_id from mesos where name = %s
 '''
 weeks_sql = conn.execute_query(weeks_query, (meso_name, ))
-weeks = sorted([d[0]+1 for d in weeks_sql])
+weeks = sorted([d[0] + 1 for d in weeks_sql])
 
 week = st.selectbox('Week', weeks) - 1
 
@@ -30,7 +31,7 @@ days_query = '''
 select distinct day_id from mesos where name = %s
 '''
 day_sql = conn.execute_query(days_query, (meso_name, ))
-days = sorted([str(d[0]+1) for d in day_sql])
+days = sorted([str(d[0] + 1) for d in day_sql])
 
 day_tabs = st.tabs(days)
 
@@ -70,17 +71,23 @@ insert into fitness.mesos
 values (%s, %s, %s, 0, %s, %s, %s, %s, %s, %s, %s, now())
 '''
 
+
 for i in range(len(day_tabs)):
     with day_tabs[i]:
-        st.write(f'Day {i+1}')
+        st.write(f'## Day {i + 1}')
+
         exercise_sql = conn.execute_query(execise_query, (i, week, meso_name))
+        workout_dict = {}
 
         for exercise in range(len(exercise_sql)):
-            st.write(exercise_sql[exercise][0])
+            st.write(f'### {exercise_sql[exercise][0]}')
             exercise_id = exercise_sql[exercise][1]
+            workout_dict[exercise_id] = []
 
             workout_sql = conn.execute_query(workout_query,
                                              (i, week, exercise_id, meso_name))
+            # rewrite to use a dictionary?
+            # pre populate based on last week
 
             cols = st.columns(4)
             for j in range(len(workout_sql)):
@@ -91,7 +98,7 @@ for i in range(len(day_tabs)):
                 order_id = workout_sql[j][4]
 
                 with cols[0]:
-                    st.write(f'Set: {sets+1}')
+                    st.write(f'Set: {sets + 1}')
                 with cols[1]:
                     if completed == 0:
                         weight = st.number_input('Weight',
@@ -114,20 +121,31 @@ for i in range(len(day_tabs)):
                         st.write(f'Reps: {reps}')
                 with cols[3]:
                     if completed == 0:
-                        c = st.button('Complete',
-                                      key=f'completed{exercise, i, j}')
+                        c = st.checkbox('Complete',
+                                        key=f'completed{exercise, i, j}')
                         if c:
-                            conn.execute_query(
-                                update_set_query,
-                                (reps, weight, sets, i, week,
-                                 exercise_id, meso_name))
+                            s = {'weight': weight, 'reps': reps}
+                            workout_dict[exercise_id].append(s)
                     else:
                         st.write('Completed')
 
-            add_set = st.button('Add set', key=f'{exercise, i}')
+            add_set = st.button('Add set', key=f'add{exercise, i}')
             if add_set:
                 conn.execute_query(add_set_query,
                                    (meso_id, meso_name, user_id,
-                                    sets+1, weight, reps,
+                                    sets + 1, 0, 0,
                                     order_id, exercise_id, i, week)
                                    )
+                st.rerun()
+
+        st.write('###')
+        complete_workout = st.button('Complete Workout', key=f'complete{exercise, i}')
+
+        if complete_workout:
+            for exercise_id, sets in workout_dict.items():
+                for s in range(len(sets)):
+                    # st.write(sets[s]['reps'], sets[s]['weight'], s, i, week, exercise_id, meso_name)
+                    conn.execute_query(
+                        update_set_query,
+                        (sets[s]['reps'], sets[s]['weight'], s, i, week, exercise_id, meso_name))
+                    st.rerun()
