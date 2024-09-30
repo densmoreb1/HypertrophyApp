@@ -16,6 +16,7 @@
 - Graph to see progression of exercises
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 ## Design Research
 
@@ -51,6 +52,8 @@
     - `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id`
 - When creating on machine, use the service name in the docker compose file for address
 
+=======
+>>>>>>> 7fda342 (notes)
 ## TODO for Release 1.0
 
 <<<<<<< HEAD
