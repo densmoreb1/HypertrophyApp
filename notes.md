@@ -34,3 +34,13 @@
 - When creating on machine, use the service name in the docker compose file for address
 - Volumes in docker go to /var/lib/docker/volumes
 
+### Docker Compose
+
+- `docker compose up -d`
+    - starts the containers detached from the terminal
+- `docker compose logs`
+- `docker compose start` and `stop`
+- `docker compose down`
+    - stops and deletes the containers
+    - adding -v deletes the volumes
+
