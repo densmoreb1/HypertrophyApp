@@ -86,8 +86,14 @@ for i in range(len(day_tabs)):
 
             workout_sql = conn.execute_query(workout_query,
                                              (i, week, exercise_id, meso_name))
-            # rewrite to use a dictionary?
-            # pre populate based on last week
+
+            previous_workout = conn.execute_query(workout_query,
+                                                  (i, week - 1, exercise_id, meso_name))
+
+            if len(previous_workout) > 0:
+                workout_sets = previous_workout
+            else:
+                workout_sets = workout_sql
 
             cols = st.columns(4)
             for j in range(len(workout_sql)):
@@ -144,7 +150,6 @@ for i in range(len(day_tabs)):
         if complete_workout:
             for exercise_id, sets in workout_dict.items():
                 for s in range(len(sets)):
-                    # st.write(sets[s]['reps'], sets[s]['weight'], s, i, week, exercise_id, meso_name)
                     conn.execute_query(
                         update_set_query,
                         (sets[s]['reps'], sets[s]['weight'], s, i, week, exercise_id, meso_name))
