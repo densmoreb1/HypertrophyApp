@@ -80,4 +80,8 @@
 =======
 - Add a complete button to do an full insert
 - Pre populate next week workout based on prev
+<<<<<<< HEAD
 >>>>>>> fb71e46 (small fixes)
+=======
+
+>>>>>>> c07632c (changed placeholder)

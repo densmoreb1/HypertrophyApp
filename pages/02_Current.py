@@ -40,8 +40,7 @@ select distinct e.name, e.id, m.order_id
 from mesos m
 inner join exercises e
     on m.exercise_id = e.id
-where m.day_id = %s and m.week_id = %s
-and m.name = %s
+where m.day_id = %s and m.week_id = %s and m.name = %s
 order by m.order_id
 '''
 
@@ -110,7 +109,7 @@ for i in range(len(day_tabs)):
                         weight = st.number_input('Weight',
                                                  label_visibility='collapsed',
                                                  value=None,
-                                                 placeholder='Weight',
+                                                 placeholder=workout_sets[-1][2],
                                                  key=f'weight{exercise, i, j}',
                                                  step=.5)
                     else:
@@ -120,7 +119,7 @@ for i in range(len(day_tabs)):
                         reps = st.number_input('Reps',
                                                label_visibility='collapsed',
                                                value=None,
-                                               placeholder='Reps',
+                                               placeholder=workout_sets[-1][1],
                                                key=f'reps{exercise, i, j}',
                                                step=1)
                     else:
