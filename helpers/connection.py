@@ -1,4 +1,5 @@
 import mysql.connector
+import os
 from mysql.connector import Error
 
 
@@ -6,7 +7,7 @@ class MySQLDatabase:
     def __init__(self):
         self.config = {
             'user': 'root',
-            'password': 'remote22',
+            'password': os.environ['MYSQL_PASSWORD'],
             'host': 'mysql',
             'database': 'fitness'
         }

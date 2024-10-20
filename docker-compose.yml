@@ -11,7 +11,7 @@ services:
     environment:
       - MYSQL_HOST=mysql
       - MYSQL_USER=root
-      - MYSQL_PASSWORD=remote22
+      - MYSQL_PASSWORD=CHANGE
       - MYSQL_DATABASE=fitness
     depends_on:
       - mysql
@@ -20,7 +20,7 @@ services:
     image: mysql:latest
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: remote22
+      MYSQL_ROOT_PASSWORD: CHANGE
       MYSQL_DATABASE: test_db
     volumes:
       - mysql_data:/var/lib/mysql
