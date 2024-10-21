@@ -15,3 +15,7 @@
 - Able to see how many sets per muscle group all time
 - Graph to see progression of exercises
 
+## TODO for Release 1.0
+
+- Add a complete button to do an full insert
+- Pre populate next week workout based on prev
