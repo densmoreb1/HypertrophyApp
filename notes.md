@@ -14,8 +14,7 @@
 
 ### Environment
 
-- Make conda env
-  conda env create hype
+- `python -m venv .venv`
 - Install dependencies
 
 ### Design the Database
