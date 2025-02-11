@@ -5,8 +5,8 @@ use fitness;
 
 create table if not exists exercises (
 	id int auto_increment primary key,
-	name varchar(100),
 	muscle_group varchar(100),
+	name varchar(100),
 	unique (name)
 );
 
@@ -17,17 +17,17 @@ create table if not exists users (
 
 create table if not exists mesos (
 	id int auto_increment primary key,
+	completed int,
+	day_id int,
+	exercise_id int,
 	meso_id int,
 	name varchar(100),
-	user_id int,
-	completed int,
-	set_id int,
-	reps int,
-	weight numeric(15, 1),
 	order_id int,
-	exercise_id int,
-	day_id int,
+	reps int,
+	set int,
+	user_id int,
 	week_id int,
+	weight numeric(15, 1),
 	date_created datetime,
 	date_completed datetime,
 	foreign key (user_id) references users(id),
@@ -35,29 +35,23 @@ create table if not exists mesos (
 	unique (meso_id, name, user_id, exercise_id, day_id, week_id, set_id)
 );
 
-create table if not exists ranking (
-	id int auto_increment primary key,
-	sorness int,
-	pump int
-);
+insert into users (name) values ('brandon');
+insert into users (name) values ('ivy');
 
-INSERT INTO users (name) VALUES ('brandon');
-INSERT INTO users (name) VALUES ('ivy');
-
-INSERT INTO exercises (name, muscle_group) VALUES ('incline bench press', 'chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('pec dec', 'chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('machine chest press', 'chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('incline dumbbell press', 'chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('low incline dumbbell press', 'chest');
-INSERT INTO exercises (name, muscle_group) VALUES ('smith machine row', 'back');
-INSERT INTO exercises (name, muscle_group) VALUES ('deadlift', 'back');
-INSERT INTO exercises (name, muscle_group) VALUES ('machine t-bar row', 'back');
-INSERT INTO exercises (name, muscle_group) VALUES ('assisted pull-up', 'back');
-INSERT INTO exercises (name, muscle_group) VALUES ('chest supported row', 'back');
-INSERT INTO exercises (name, muscle_group) VALUES ('freemotion curl', 'biceps');
-INSERT INTO exercises (name, muscle_group) VALUES ('leg press', 'quads');
-INSERT INTO exercises (name, muscle_group) VALUES ('calf press machine', 'calves');
-INSERT INTO exercises (name, muscle_group) VALUES ('leg press calves', 'calves');
+insert into exercises (name, muscle_group) values ('incline bench press', 'chest');
+insert into exercises (name, muscle_group) values ('pec dec', 'chest');
+insert into exercises (name, muscle_group) values ('machine chest press', 'chest');
+insert into exercises (name, muscle_group) values ('incline dumbbell press', 'chest');
+insert into exercises (name, muscle_group) values ('low incline dumbbell press', 'chest');
+insert into exercises (name, muscle_group) values ('smith machine row', 'back');
+insert into exercises (name, muscle_group) values ('deadlift', 'back');
+insert into exercises (name, muscle_group) values ('machine t-bar row', 'back');
+insert into exercises (name, muscle_group) values ('assisted pull-up', 'back');
+insert into exercises (name, muscle_group) values ('chest supported row', 'back');
+insert into exercises (name, muscle_group) values ('freemotion curl', 'biceps');
+insert into exercises (name, muscle_group) values ('leg press', 'quads');
+insert into exercises (name, muscle_group) values ('calf press machine', 'calves');
+insert into exercises (name, muscle_group) values ('leg press calves', 'calves');
 insert into exercises (name, muscle_group) values ('incline bench press','chest');
 insert into exercises (name, muscle_group) values ('pec dec','chest');
 insert into exercises (name, muscle_group) values ('machine chest press','chest');
