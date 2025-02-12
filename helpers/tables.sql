@@ -24,14 +24,12 @@ create table if not exists mesos (
 	name varchar(100),
 	order_id int,
 	reps int,
-	set int,
+	set_id int,
 	user_id int,
 	week_id int,
 	weight numeric(15, 1),
 	date_created datetime,
 	date_completed datetime,
-	foreign key (user_id) references users(id),
-	foreign key (exercise_id) references exercises(id),
 	unique (meso_id, name, user_id, exercise_id, day_id, week_id, set_id)
 );
 
