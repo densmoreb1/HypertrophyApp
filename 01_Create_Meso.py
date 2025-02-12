@@ -60,7 +60,7 @@ values
 
 if result and name != '':
 
-    meso_id = conn.execute_query('select max(meso_id) from mesos')[0][0]
+    meso_id = conn.execute_query('select max(meso_id) from mesos where user_id = %s', (user_id,))[0][0]
     if meso_id is None:
         meso_id = 0
     else:

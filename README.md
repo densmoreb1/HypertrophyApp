@@ -19,4 +19,5 @@
 
 - Redo the current workout page to only show the one current workout
   - Need to filter on completed
+  - Complete button to insert into mesos
 - Create a past workout page to view completed workout
