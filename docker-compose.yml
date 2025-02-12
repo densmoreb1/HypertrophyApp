@@ -1,5 +1,7 @@
 services:
   app:
+    hostname: hypertrophy-app
+    container_name: hypertrophy-app
     image: python:latest
     restart: unless-stopped
     ports:
@@ -18,15 +20,14 @@ services:
 
   mysql:
     image: mysql:latest
+    hostname: hypertrophy-mysql
+    container_name: hypertrophy-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: CHANGE
-      MYSQL_DATABASE: test_db
+      MYSQL_DATABASE: fitness
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./.mysql_data:/var/lib/mysql
       - ./helpers/tables.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the init script
     ports:
       - "3601:3601"
-
-volumes:
-  mysql_data:
