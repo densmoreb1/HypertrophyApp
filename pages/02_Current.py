@@ -41,6 +41,8 @@ query = '''
         '''
 exercises = conn.execute_query(query, (day_id, week_id, meso_id, user_id))
 
+st.write(f'## Week {week_id + 1} Day {day_id + 1}')
+
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
 
@@ -108,7 +110,7 @@ st.write('###')
 @st.dialog("Finished Workout?")
 def complete_workout():
     if st.button("Complete"):
-        st.switch_page('pages/04_Previous_Workouts.py')
+        st.switch_page('pages/03_Previous_Workouts.py')
 
 
 if st.button('Complete Workout'):

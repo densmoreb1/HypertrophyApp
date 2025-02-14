@@ -1,5 +1,12 @@
 # Hypertrophy App
 
+## TODO
+
+- Pre populate next week workout based on previous
+- Allow for logins
+  - https://docs.streamlit.io/develop/concepts/multipage-apps/page-and-navigation
+- Create a past workout page to view completed workout
+
 ## High Level Goal
 
 - Web app that tracks workouts
@@ -14,11 +21,3 @@
 - Able to see how many sets per muscle group in a meso cycle
 - Able to see how many sets per muscle group all time
 - Graph to see progression of exercises
-
-## TODO
-
-- Add a complete button to do an full insert
-- Pre populate next week workout based on previous
-- Allow for logins
-  - https://docs.streamlit.io/develop/concepts/multipage-apps/page-and-navigation
-- Create a past workout page to view completed workout
