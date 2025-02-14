@@ -78,6 +78,14 @@ for i in range(len(exercises)):
         with cols[3]:
             completed = st.checkbox('Complete', key=f'completed{exercise_name, set_id}')
 
+        if completed:
+            query = '''
+                    update mesos
+                    set reps = %s, weight = %s, completed = 1, date_completed = now()
+                    where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s
+                    '''
+            conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name))
+
     add_set = st.button('Add set', key=f'add{exercise_name, set_id}')
     if add_set:
         query = '''
