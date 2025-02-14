@@ -96,3 +96,7 @@ for i in range(len(exercises)):
         conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id))
         st.toast('Inserted')
         st.rerun()
+
+# Complete workout - navigate to previous workout page
+st.write('###')
+all_done = st.button('Complete Workout')

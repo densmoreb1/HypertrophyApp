@@ -20,4 +20,6 @@
 - Redo the current workout page to only show the one current workout
   - Need to filter on completed
   - Complete button to insert into mesos
+- Allow for logins
+  - https://docs.streamlit.io/develop/concepts/multipage-apps/page-and-navigation
 - Create a past workout page to view completed workout

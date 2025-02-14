@@ -4,13 +4,16 @@ import streamlit as st
 st.set_page_config(page_title='Create Meso', layout='wide')
 conn = MySQLDatabase()
 
+# Get the available exercises
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
 exercise_query = 'select name from exercises where muscle_group = %s'
 
+# Get the available users
 user_sql = conn.execute_query('select distinct name from users')
 users = [u[0] for u in user_sql]
 
+# Get the current user
 user_name = st.selectbox('Name', users)
 user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
@@ -52,9 +55,8 @@ for i in range(len(cols)):
 
 insert_query = '''
 insert into mesos
-(meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created)
-values
-(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+(meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
+(%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
 '''
 
 
