@@ -4,18 +4,20 @@ import streamlit as st
 st.set_page_config(page_title='Create Meso', layout='wide')
 conn = MySQLDatabase()
 
+# Get the available exercises
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
 exercise_query = 'select name from exercises where muscle_group = %s'
 
-st.write('# Create Meso')
-
+# Get the available users
 user_sql = conn.execute_query('select distinct name from users')
 users = [u[0] for u in user_sql]
 
+# Get the current user
 user_name = st.selectbox('Name', users)
-user_id = conn.execute_query('select id from users where name = %s',
-                             (user_name,))[0][0]
+user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
+
+st.write('# Create Meso')
 
 name = st.text_input('Name of Meso').lower()
 weeks = st.selectbox('Weeks', (4, 5, 6))
@@ -44,35 +46,23 @@ for i in range(len(cols)):
                                       key=f'muscle{i, r}')
                 exercise_sql = conn.execute_query(exercise_query, (muscle,))
                 exercise_selection = [e[0] for e in exercise_sql]
-                exercise = st.selectbox(
-                    'Exercise', (exercise_selection), key=f'exercise{i, r}')
+                exercise = st.selectbox('Exercise', (exercise_selection), key=f'exercise{i, r}')
 
                 final_exercise_list.append(exercise)
 
             meso[i] = final_exercise_list
 
 
-exercise_id_query = '''
-select id
-from exercises
-where name = %s
-'''
-
-meso_id_query = '''
-select max(meso_id)
-from mesos
-'''
-
 insert_query = '''
 insert into mesos
-(meso_id, name, user_id, completed, set_id, reps, weight, order_id
-, exercise_id, day_id, week_id, date_created)
-values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+(meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
+(%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
 '''
+
 
 if result and name != '':
 
-    meso_id = conn.execute_query(meso_id_query)[0][0]
+    meso_id = conn.execute_query('select max(meso_id) from mesos where user_id = %s', (user_id,))[0][0]
     if meso_id is None:
         meso_id = 0
     else:
@@ -81,10 +71,5 @@ if result and name != '':
     for week_id in range(weeks):
         for day_id, value in meso.items():
             for order_id in range(len(value)):
-                exercise_id = conn.execute_query(
-                    exercise_id_query, (value[order_id],))[0][0]
-                res = conn.execute_query(
-                    insert_query,
-                    (meso_id, name, user_id, 0, 0, 0, 0, order_id,
-                     exercise_id, day_id, week_id,)
-                )
+                exercise_id = conn.execute_query('select id from exercises where name = %s', (value[order_id],))[0][0]
+                res = conn.execute_query(insert_query, (meso_id, name, user_id, 0, 0, 0, 0, order_id, exercise_id, day_id, week_id,))
