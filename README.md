@@ -5,7 +5,7 @@
 - Web app that tracks workouts
 - Docker container
 - 5 or 6 week meso cycles
-- Feedback on each mucsle group
+- Feedback on each muscle group
   - Soreness from last time
   - Pump
   - Workload
@@ -17,9 +17,8 @@
 
 ## TODO
 
-- Redo the current workout page to only show the one current workout
-  - Need to filter on completed
-  - Complete button to insert into mesos
+- Add a complete button to do an full insert
+- Pre populate next week workout based on previous
 - Allow for logins
   - https://docs.streamlit.io/develop/concepts/multipage-apps/page-and-navigation
 - Create a past workout page to view completed workout
