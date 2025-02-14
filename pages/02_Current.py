@@ -23,10 +23,13 @@ meso_id = conn.execute_query('select meso_id from mesos where name = %s', (meso_
 
 
 # Get the first uncompleted workout
-query = 'select min(day_id), min(week_id) from mesos where completed = 0 and meso_id = %s and user_id = %s'
-uncompleted_ids = conn.execute_query(query, (meso_id, user_id))[0]
-day_id = uncompleted_ids[0]
-week_id = uncompleted_ids[1]
+# Get week_id
+query = 'select min(week_id) from mesos where completed = 0 and meso_id = %s and user_id = %s'
+week_id = conn.execute_query(query, (meso_id, user_id))[0][0]
+
+# Get day_id
+query = 'select min(day_id) from mesos where completed = 0 and meso_id = %s and user_id = %s and week_id = %s'
+day_id = conn.execute_query(query, (meso_id, user_id, week_id))[0][0]
 
 # Get the exercises
 query = '''
@@ -37,6 +40,8 @@ query = '''
         order by m.order_id
         '''
 exercises = conn.execute_query(query, (day_id, week_id, meso_id, user_id))
+
+st.write(f'## Week {week_id + 1} Day {day_id + 1}')
 
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
@@ -97,6 +102,16 @@ for i in range(len(exercises)):
         st.toast('Inserted')
         st.rerun()
 
+
 # Complete workout - navigate to previous workout page
 st.write('###')
-all_done = st.button('Complete Workout')
+
+
+@st.dialog("Finished Workout?")
+def complete_workout():
+    if st.button("Complete"):
+        st.switch_page('pages/03_Previous_Workouts.py')
+
+
+if st.button('Complete Workout'):
+    complete_workout()
