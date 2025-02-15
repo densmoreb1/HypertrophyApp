@@ -7,12 +7,8 @@ st.write('# Statistics')
 
 conn = MySQLDatabase()
 
-user_sql = conn.execute_query('select distinct name from users')
-users = [u[0] for u in user_sql]
-
-user_name = st.selectbox('Name', users)
-user_id = conn.execute_query('select id from users where name = %s',
-                             (user_name,))[0][0]
+user_name = st.session_state.role
+user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
@@ -40,4 +36,4 @@ for muscle in muscle_groups:
     df = df[df['muscle_group'] == muscle]
     st.bar_chart(df, x='week', y='set_count')
 
-# view volumne of exercise over each workout
+# view volume of exercise over each workout

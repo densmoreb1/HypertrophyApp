@@ -12,7 +12,8 @@ create table if not exists exercises (
 
 create table if not exists users (
 	id int auto_increment primary key,
-	name varchar(100)
+	name varchar(100),
+	unique (name)
 );
 
 create table if not exists mesos (
@@ -50,8 +51,6 @@ insert into exercises (name, muscle_group) values ('freemotion curl', 'biceps');
 insert into exercises (name, muscle_group) values ('leg press', 'quads');
 insert into exercises (name, muscle_group) values ('calf press machine', 'calves');
 insert into exercises (name, muscle_group) values ('leg press calves', 'calves');
-insert into exercises (name, muscle_group) values ('pec dec','chest');
-insert into exercises (name, muscle_group) values ('machine chest press','chest');
 insert into exercises (name, muscle_group) values ('machine lateral raise','shoulders');
 insert into exercises (name, muscle_group) values ('cable tricep pushdown','triceps');
 insert into exercises (name, muscle_group) values ('machine preacher curl','biceps');
@@ -71,15 +70,3 @@ insert into exercises (name, muscle_group) values ('barbell squat','quads');
 insert into exercises (name, muscle_group) values ('walking lunges','quads');
 insert into exercises (name, muscle_group) values ('sissy squat','quads');
 
---select concat(
---	'insert into exercises (name, muscle_group) values (',
---	'''',
---	name,
---	'''',
---	',',
---	'''',
---	muscle_group,
---	'''',
---	');'
---	)
---from fitness.exercises;
