@@ -9,12 +9,8 @@ groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
 exercise_query = 'select name from exercises where muscle_group = %s'
 
-# Get the available users
-user_sql = conn.execute_query('select distinct name from users')
-users = [u[0] for u in user_sql]
-
 # Get the current user
-user_name = st.selectbox('Name', users)
+user_name = st.session_state.role
 user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
 st.write('# Create Meso')
