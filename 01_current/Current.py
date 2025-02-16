@@ -109,7 +109,7 @@ st.write('###')
 @st.dialog("Finished Workout?")
 def complete_workout():
     if st.button("Complete"):
-        st.switch_page('pages/03_Previous_Workouts.py')
+        st.switch_page('02_statistics/Previous_Workouts.py')
 
 
 if st.button('Complete Workout'):
