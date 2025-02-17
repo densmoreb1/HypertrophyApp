@@ -10,7 +10,7 @@ user_id = conn.execute_query('select id from users where name = %s', (user_name,
 
 
 # Get Meso for the selected User
-query = 'select distinct name from mesos where user_id = %s'
+query = 'select distinct name, meso_id from mesos where user_id = %s order by meso_id desc'
 sql = conn.execute_query(query, (user_id,))
 mesos = [g[0] for g in sql]
 
@@ -21,14 +21,16 @@ else:
     st.write('Looks you have not created a meso yet')
     st.stop()
 
+
 # Get the first uncompleted workout
 # Get week_id
-query = 'select min(week_id) from mesos where completed = 0 and meso_id = %s and user_id = %s'
-week_id = conn.execute_query(query, (meso_id, user_id))[0][0]
+query = 'select min(week_id) from mesos where completed = 0 and meso_id = %s'
+week_id = conn.execute_query(query, (meso_id,))[0][0]
 
 # Get day_id
-query = 'select min(day_id) from mesos where completed = 0 and meso_id = %s and user_id = %s and week_id = %s'
-day_id = conn.execute_query(query, (meso_id, user_id, week_id))[0][0]
+query = 'select min(day_id) from mesos where completed = 0 and meso_id = %s and week_id = %s'
+day_id = conn.execute_query(query, (meso_id, week_id))[0][0]
+
 
 # Get the exercises
 query = '''
@@ -45,6 +47,8 @@ st.write(f'## Week {week_id + 1} Day {day_id + 1}')
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
 
+    st.write(f'### {exercise_name}')
+
     query = '''
             select m.set_id, m.reps, m.weight, e.name, e.id, m.order_id
             from mesos m
@@ -53,36 +57,46 @@ for i in range(len(exercises)):
             order by m.order_id
             '''
     workout = conn.execute_query(query, (day_id, week_id, meso_id, user_id, exercise_name))
-
-    st.write(f'### {exercise_name}')
+    previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, user_id, exercise_name))
 
     for i in range(len(workout)):
+        prev_reps = None
+        prev_weight = None
+        # if last workout exists
+        if len(previous) > 0:
+            # if set exists
+            if i < len(previous):
+                prev_reps = previous[i][1]
+                prev_weight = previous[i][2]
+
         set_id = workout[i][0]
         reps = workout[i][1]
         weight = workout[i][2]
-        name = workout[i][3]
         exercise_id = workout[i][4]
         order_id = workout[i][5]
 
+        completed = []
         cols = st.columns(4)
         with cols[0]:
             st.write(f'Set: {set_id + 1}')
         with cols[1]:
             weight = st.number_input('Weight',
                                      label_visibility='collapsed',
+                                     placeholder=f'Weight: {prev_weight}',
                                      value=None,
                                      key=f'weight{exercise_name, set_id}',
                                      step=.5)
         with cols[2]:
             reps = st.number_input('Reps',
                                    label_visibility='collapsed',
+                                   placeholder=f'Reps: {prev_reps}',
                                    value=None,
                                    key=f'reps{exercise_name, set_id}',
                                    step=1)
         with cols[3]:
-            completed = st.checkbox('Complete', key=f'completed{exercise_name, set_id}')
+            completed.append(st.checkbox('Complete', key=f'completed{exercise_name, set_id}'))
 
-        if completed:
+        if all(completed):
             query = '''
                     update mesos
                     set reps = %s, weight = %s, completed = 1, date_completed = now()
@@ -106,9 +120,9 @@ for i in range(len(exercises)):
 st.write('###')
 
 
-@st.dialog("Finished Workout?")
+@st.dialog("Workout Completed")
 def complete_workout():
-    if st.button("Complete"):
+    if st.button("View Past Workouts"):
         st.switch_page('02_statistics/Previous_Workouts.py')
 
 

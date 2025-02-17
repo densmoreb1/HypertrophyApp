@@ -11,7 +11,7 @@ user_id = conn.execute_query('select id from users where name = %s', (user_name,
 
 
 # Get Meso for the selected User
-query = 'select distinct name from mesos where user_id = %s'
+query = 'select distinct name, meso_id from mesos where user_id = %s order by meso_id desc'
 sql = conn.execute_query(query, (user_id,))
 mesos = [g[0] for g in sql]
 
@@ -24,8 +24,8 @@ else:
 
 
 # Get the completed week_ids
-query = 'select distinct week_id from mesos where name = %s and completed = 1 order by week_id'
-sql = conn.execute_query(query, (meso_name, ))
+query = 'select distinct week_id from mesos where meso_id = %s and completed = 1 order by week_id'
+sql = conn.execute_query(query, (meso_id, ))
 weeks = [d[0] + 1 for d in sql]
 
 if len(weeks) > 0:
@@ -35,8 +35,8 @@ else:
     st.stop()
 
 # Get the completed day_ids
-query = 'select distinct day_id from mesos where name = %s and completed = 1 order by day_id'
-sql = conn.execute_query(query, (meso_name, ))
+query = 'select distinct day_id from mesos where completed = 1 and meso_id = %s and week_id = %s order by day_id'
+sql = conn.execute_query(query, (meso_id, week_id))
 days = [str(d[0] + 1) for d in sql]
 
 day_tabs = st.tabs(days)
