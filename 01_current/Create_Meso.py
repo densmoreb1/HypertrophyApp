@@ -7,14 +7,14 @@ conn = MySQLDatabase()
 # Get the available exercises
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]
-exercise_query = 'select name from exercises where muscle_group = %s'
+
 
 # Get the current user
 user_name = st.session_state.role
 user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
-st.write('# Create Meso')
 
+st.write('# Create Meso')
 name = st.text_input('Name of Meso').lower()
 weeks = st.selectbox('Weeks', (4, 5, 6))
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
@@ -31,29 +31,28 @@ for i in range(len(cols)):
         with cols[i]:
             st.write(f'### Day {i + 1}')
 
-            exercises_per = st.selectbox(
-                'How many exercises?', (1, 2, 3, 4, 5, 6), key=f'per{i}')
+            exercises_per = st.selectbox('How many exercises?', (1, 2, 3, 4, 5, 6), key=f'per{i}')
 
             final_exercise_list = []
-
             for r in range(exercises_per):
-                muscle = st.selectbox(f'#### Muscle Group {r + 1}',
-                                      (muscle_groups),
-                                      key=f'muscle{i, r}')
-                exercise_sql = conn.execute_query(exercise_query, (muscle,))
-                exercise_selection = [e[0] for e in exercise_sql]
-                exercise = st.selectbox('Exercise', (exercise_selection), key=f'exercise{i, r}')
+                muscle = st.selectbox(f'Exercise {r + 1}',
+                                      muscle_groups,
+                                      key=f'muscle{i, r}',
+                                      index=None,
+                                      placeholder='Muscle Group')
+
+                sql = conn.execute_query('select name from exercises where muscle_group = %s', (muscle,))
+                exercise_selection = [e[0] for e in sql]
+                exercise = st.selectbox('Exercise',
+                                        exercise_selection,
+                                        key=f'exercise{i, r}',
+                                        index=None,
+                                        placeholder='Exercise',
+                                        label_visibility='collapsed')
 
                 final_exercise_list.append(exercise)
 
             meso[i] = final_exercise_list
-
-
-insert_query = '''
-insert into mesos
-(meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
-(%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
-'''
 
 
 if result and name != '':
@@ -68,4 +67,9 @@ if result and name != '':
         for day_id, value in meso.items():
             for order_id in range(len(value)):
                 exercise_id = conn.execute_query('select id from exercises where name = %s', (value[order_id],))[0][0]
-                res = conn.execute_query(insert_query, (meso_id, name, user_id, 0, 0, 0, 0, order_id, exercise_id, day_id, week_id,))
+                insert_query = '''
+                            insert into mesos
+                            (meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
+                            (%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
+                            '''
+                conn.execute_query(insert_query, (meso_id, name, user_id, 0, 0, 0, 0, order_id, exercise_id, day_id, week_id,))
