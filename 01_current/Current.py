@@ -3,7 +3,6 @@ import streamlit as st
 
 conn = MySQLDatabase()
 
-
 # Get Users to populate current meso
 user_name = st.session_state.role
 user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
@@ -83,7 +82,7 @@ for i in range(len(exercises)):
     with exercise_cols[1]:
         inside_cols = st.columns(2)
         with inside_cols[1]:
-            if st.button('...'):
+            if st.button('...', key=f'change{exercise_name}'):
                 change_exercise(exercise_name, exercise_id)
 
     for i in range(len(workout)):
@@ -139,7 +138,7 @@ for i in range(len(exercises)):
                 (%s,        %s,      %s,         0,     %s,    %s,    %s,       %s,          %s,     %s,      %s, now())
                 '''
         conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id))
-        st.toast('Inserted')
+        st.toast('Set added')
         st.rerun()
 
 

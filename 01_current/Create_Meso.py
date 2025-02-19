@@ -73,3 +73,4 @@ if result and name != '':
                             (%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
                             '''
                 conn.execute_query(insert_query, (meso_id, name, user_id, 0, 0, 0, 0, order_id, exercise_id, day_id, week_id,))
+    st.toast('Meso Created')

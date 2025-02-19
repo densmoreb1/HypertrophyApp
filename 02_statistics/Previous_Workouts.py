@@ -1,7 +1,6 @@
 from helpers.connection import MySQLDatabase
 import streamlit as st
 
-st.set_page_config(page_title='Previous Workouts', layout='centered')
 conn = MySQLDatabase()
 
 
