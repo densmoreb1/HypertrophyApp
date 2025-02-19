@@ -23,7 +23,7 @@ result = st.button('Create Meso')
 if result and name == '':
     st.warning('Enter name', icon="⚠️")
 
-cols = st.columns(days)
+cols = st.columns(days, border=True)
 
 meso = {}
 for i in range(len(cols)):
