@@ -20,9 +20,6 @@ weeks = st.selectbox('Weeks', (4, 5, 6))
 days = st.selectbox('Days per week', (1, 2, 3, 4, 5, 6, 7))
 result = st.button('Create Meso')
 
-if result and name == '':
-    st.warning('Enter name', icon="⚠️")
-
 cols = st.columns(days, border=True)
 
 meso = {}
@@ -57,6 +54,10 @@ for i in range(len(cols)):
 
 if result and name != '':
 
+    if len(conn.execute_query('select name from mesos where name = %s and user_id = %s', (name, user_id))) > 0:
+        st.toast('Meso already exists with name', icon="⚠️")
+        st.stop()
+
     meso_id = conn.execute_query('select max(meso_id) from mesos where user_id = %s', (user_id,))[0][0]
     if meso_id is None:
         meso_id = 0
@@ -73,4 +74,4 @@ if result and name != '':
                             (%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
                             '''
                 conn.execute_query(insert_query, (meso_id, name, user_id, 0, 0, 0, 0, order_id, exercise_id, day_id, week_id,))
-    st.toast('Meso Created')
+    st.toast('Meso Created', icon='✅')
