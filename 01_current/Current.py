@@ -3,7 +3,6 @@ import streamlit as st
 
 conn = MySQLDatabase()
 
-
 # Get Users to populate current meso
 user_name = st.session_state.role
 user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
@@ -44,20 +43,47 @@ exercises = conn.execute_query(query, (day_id, week_id, meso_id, user_id))
 
 st.write(f'## Week {week_id + 1} Day {day_id + 1}')
 
+
+@st.dialog('Change exercise')
+def change_exercise(exercise_name, exercise_id):
+    group = conn.execute_query('select muscle_group from exercises where id = %s', (exercise_id,))[0][0]
+    sql = conn.execute_query('select name from exercises where muscle_group = %s', (group,))
+    exercise_selection = [e[0] for e in sql]
+    updated_exercise = st.selectbox(f'{group.capitalize()} Exercises', exercise_selection)
+    updated_exercise_id = conn.execute_query('select id from exercises where name = %s', (updated_exercise, ))[0][0]
+    # Update the meso
+    query = '''
+            update mesos m
+            set m.exercise_id = %s
+            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and m.exercise_id = %s
+            '''
+    if st.button('Confirm'):
+        conn.execute_query(query, (updated_exercise_id, day_id, week_id, meso_id, exercise_id))
+        st.rerun()
+
+
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
-
-    st.write(f'### {exercise_name}')
+    exercise_id = exercises[i][1]
 
     query = '''
             select m.set_id, m.reps, m.weight, e.name, e.id, m.order_id
             from mesos m
             inner join exercises e on m.exercise_id = e.id
-            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and m.user_id = %s and e.name = %s
+            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and e.name = %s
             order by m.order_id
             '''
-    workout = conn.execute_query(query, (day_id, week_id, meso_id, user_id, exercise_name))
-    previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, user_id, exercise_name))
+    workout = conn.execute_query(query, (day_id, week_id, meso_id, exercise_name))
+    previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, exercise_name))
+
+    exercise_cols = st.columns(2)
+    with exercise_cols[0]:
+        st.write(f'### {exercise_name}')
+    with exercise_cols[1]:
+        inside_cols = st.columns(2)
+        with inside_cols[1]:
+            if st.button('...', key=f'change{exercise_name}'):
+                change_exercise(exercise_name, exercise_id)
 
     for i in range(len(workout)):
         prev_reps = None
@@ -112,7 +138,7 @@ for i in range(len(exercises)):
                 (%s,        %s,      %s,         0,     %s,    %s,    %s,       %s,          %s,     %s,      %s, now())
                 '''
         conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id))
-        st.toast('Inserted')
+        st.toast('Set added')
         st.rerun()
 
 
