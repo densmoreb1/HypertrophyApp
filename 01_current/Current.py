@@ -58,7 +58,6 @@ def change_exercise(exercise_name, exercise_id):
             set m.exercise_id = %s
             where m.day_id = %s and m.week_id = %s and m.meso_id = %s and m.exercise_id = %s
             '''
-    st.write(updated_exercise_id, day_id, week_id, meso_id, exercise_id)
     if st.button('Confirm'):
         conn.execute_query(query, (updated_exercise_id, day_id, week_id, meso_id, exercise_id))
         st.rerun()
