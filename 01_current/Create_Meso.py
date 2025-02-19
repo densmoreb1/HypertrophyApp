@@ -23,7 +23,7 @@ result = st.button('Create Meso')
 if result and name == '':
     st.warning('Enter name', icon="⚠️")
 
-cols = st.columns(days)
+cols = st.columns(days, border=True)
 
 meso = {}
 for i in range(len(cols)):
@@ -73,3 +73,4 @@ if result and name != '':
                             (%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
                             '''
                 conn.execute_query(insert_query, (meso_id, name, user_id, 0, 0, 0, 0, order_id, exercise_id, day_id, week_id,))
+    st.toast('Meso Created')

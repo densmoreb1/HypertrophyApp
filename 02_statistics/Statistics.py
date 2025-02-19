@@ -2,7 +2,6 @@ from helpers.connection import MySQLDatabase
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title='Statistics', layout='centered')
 st.write('# Statistics')
 
 conn = MySQLDatabase()

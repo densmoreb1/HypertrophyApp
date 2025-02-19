@@ -3,7 +3,6 @@ import streamlit as st
 
 conn = MySQLDatabase()
 
-st.set_page_config(page_title='Add Exercise', layout='centered')
 st.write('# Add Exercise')
 
 name = st.text_input('Exercise Name').lower()
