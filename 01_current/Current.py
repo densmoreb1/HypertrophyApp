@@ -130,7 +130,21 @@ for i in range(len(exercises)):
                     '''
             conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name))
 
-    add_set = st.button('Add set', key=f'add{exercise_name, set_id}')
+    set_cols = st.columns([1, 12])
+    with set_cols[0]:
+        add_set = st.button('Add set', key=f'add{exercise_name, set_id}')
+    with set_cols[1]:
+        remove_set = st.button('Remove set', key=f'remove{exercise_name, set_id}')
+
+    if remove_set:
+        query = '''
+                delete from mesos
+                where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s
+                '''
+        conn.execute_query(query, (set_id, day_id, week_id, exercise_id, meso_name))
+        st.toast('Set removed')
+        st.rerun()
+
     if add_set:
         query = '''
                 insert into mesos
