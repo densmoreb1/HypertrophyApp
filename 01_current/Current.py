@@ -71,11 +71,11 @@ for i in range(len(exercises)):
             select m.set_id, m.reps, m.weight, e.name, e.id, m.order_id
             from mesos m
             inner join exercises e on m.exercise_id = e.id
-            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and e.name = %s
+            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and e.name = %s and m.user_id = %s
             order by m.order_id
             '''
-    workout = conn.execute_query(query, (day_id, week_id, meso_id, exercise_name))
-    previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, exercise_name))
+    workout = conn.execute_query(query, (day_id, week_id, meso_id, exercise_name, user_id))
+    previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, exercise_name, user_id))
 
     # Formatting with columns
     exercise_cols = st.columns([4, 1])
