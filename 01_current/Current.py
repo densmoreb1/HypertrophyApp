@@ -63,6 +63,11 @@ def change_exercise(exercise_name, exercise_id):
         st.rerun()
 
 
+@st.dialog('Exercise history')
+def exercise_history(exercise_name, exercise_id):
+    st.write(exercise_name, exercise_id)
+
+
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
     exercise_id = exercises[i][1]
@@ -78,12 +83,17 @@ for i in range(len(exercises)):
     previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, exercise_name, user_id))
 
     # Formatting with columns
-    exercise_cols = st.columns([4, 1])
+    exercise_cols = st.columns([2, 1])
     with exercise_cols[0]:
         st.write(f'### {exercise_name}')
     with exercise_cols[1]:
-        if st.button('...', key=f'change{exercise_name}'):
-            change_exercise(exercise_name, exercise_id)
+        button_cols = st.columns([1, 2])
+        with button_cols[0]:
+            if st.button('Replace', key=f'swap{exercise_name}'):
+                change_exercise(exercise_name, exercise_id)
+        with button_cols[1]:
+            if st.button('History', key=f'history{exercise_name}'):
+                exercise_history(exercise_name, exercise_id)
 
     for i in range(len(workout)):
         prev_reps = None
