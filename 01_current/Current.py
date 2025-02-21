@@ -88,7 +88,7 @@ def exercise_history(exercise_name, exercise_id):
         for j in range(len(history_sql)):
             history_week = history_sql[j][0]
             history_day = history_sql[j][1]
-            st.write(f'Week {history_week + 1} Day {history_day + 1}')
+            st.write(f'### Week {history_week + 1} Day {history_day + 1}')
             history_reps = '''
                             select reps, weight
                             from mesos
@@ -102,6 +102,7 @@ def exercise_history(exercise_name, exercise_id):
                 st.write(f'Weight: {weight} Reps: {reps}')
 
 
+# Main Page
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
     exercise_id = exercises[i][1]
