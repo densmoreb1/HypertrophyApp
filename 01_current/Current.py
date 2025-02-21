@@ -1,5 +1,6 @@
 from helpers.connection import MySQLDatabase
 import streamlit as st
+import datetime
 
 conn = MySQLDatabase()
 
@@ -63,6 +64,45 @@ def change_exercise(exercise_name, exercise_id):
         st.rerun()
 
 
+@st.dialog('Exercise history')
+def exercise_history(exercise_name, exercise_id):
+    query = '''
+            select distinct name, meso_id
+            from mesos
+            where exercise_id = %s and user_id = %s and completed = 1
+            order by meso_id desc
+            '''
+    sql = conn.execute_query(query, (exercise_id, user_id))
+    for i in range(len(sql)):
+        history_meso = sql[i][0]
+        st.write(f'## {history_meso}')
+
+        history = '''
+                select distinct week_id, day_id, date_completed
+                from mesos
+                where exercise_id = %s and user_id = %s and completed = 1 and name = %s
+                order by date_completed desc
+                '''
+        history_sql = conn.execute_query(history, (exercise_id, user_id, history_meso))
+
+        for j in range(len(history_sql)):
+            history_week = history_sql[j][0]
+            history_day = history_sql[j][1]
+            st.write(f'### Week {history_week + 1} Day {history_day + 1}')
+            history_reps = '''
+                            select reps, weight
+                            from mesos
+                            where exercise_id = %s and user_id = %s and completed = 1 and name = %s and week_id = %s and day_id = %s
+                            order by date_completed desc
+                            '''
+            history_reps_sql = conn.execute_query(history_reps, (exercise_id, user_id, history_meso, history_week, history_day))
+            for h in range(len(history_reps_sql)):
+                reps = history_reps_sql[h][0]
+                weight = history_reps_sql[h][1]
+                st.write(f'Weight: {weight} Reps: {reps}')
+
+
+# Main Page
 for i in range(len(exercises)):
     exercise_name = exercises[i][0]
     exercise_id = exercises[i][1]
@@ -78,12 +118,17 @@ for i in range(len(exercises)):
     previous = conn.execute_query(query, (day_id, week_id - 1, meso_id, exercise_name, user_id))
 
     # Formatting with columns
-    exercise_cols = st.columns([4, 1])
+    exercise_cols = st.columns([2, 1])
     with exercise_cols[0]:
         st.write(f'### {exercise_name}')
     with exercise_cols[1]:
-        if st.button('...', key=f'change{exercise_name}'):
-            change_exercise(exercise_name, exercise_id)
+        button_cols = st.columns([1, 2])
+        with button_cols[0]:
+            if st.button('Replace', key=f'swap{exercise_name}'):
+                change_exercise(exercise_name, exercise_id)
+        with button_cols[1]:
+            if st.button('History', key=f'history{exercise_name}'):
+                exercise_history(exercise_name, exercise_id)
 
     for i in range(len(workout)):
         prev_reps = None
