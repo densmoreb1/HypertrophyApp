@@ -191,6 +191,7 @@ for i in range(len(exercises)):
                 where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s
                 '''
         conn.execute_query(query, (set_id, day_id, week_id, exercise_id, meso_name))
+        conn.execute_query(query, (set_id, day_id, week_id + 1, exercise_id, meso_name))
         st.rerun()
 
     if add_set:
@@ -200,6 +201,7 @@ for i in range(len(exercises)):
                 (%s,        %s,      %s,         0,     %s,    %s,    %s,       %s,          %s,     %s,      %s, now())
                 '''
         conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id))
+        conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id + 1))
         st.rerun()
 
 
@@ -214,4 +216,7 @@ def complete_workout():
 
 
 if st.button('Complete Workout'):
-    complete_workout()
+    if all(completed):
+        complete_workout()
+    else:
+        st.toast('Complete all sets', icon="⚠️")
