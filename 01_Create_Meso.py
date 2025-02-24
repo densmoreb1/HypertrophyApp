@@ -2,7 +2,6 @@ from helpers.connection import MySQLDatabase
 from helpers.login import login
 import streamlit as st
 
-st.set_page_config(layout='wide')
 
 # Login
 if st.session_state.get("authentication_status"):

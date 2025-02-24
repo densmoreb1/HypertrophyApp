@@ -5,6 +5,8 @@ from yaml.loader import SafeLoader
 
 
 def login():
+    st.set_page_config(layout='wide')
+
     with open('.streamlit/config.yml') as file:
         config = yaml.load(file, Loader=SafeLoader)
 
