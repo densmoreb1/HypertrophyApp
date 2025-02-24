@@ -66,7 +66,7 @@ def change_exercise(exercise_name, exercise_id):
 
     query = '''
             update mesos m
-            set m.exercise_id = %s
+            set m.exercise_id = %s, m.weight = NULl, m.reps = NULL, m.completed = 0
             where m.day_id = %s and m.week_id = %s and m.meso_id = %s and m.exercise_id = %s and user_id = %s
             '''
     if st.button('Confirm'):
@@ -118,7 +118,7 @@ for i in range(len(exercises)):
     exercise_id = exercises[i][1]
 
     query = '''
-            select m.set_id, m.reps, m.weight, e.name, e.id, m.order_id
+            select m.set_id, m.reps, m.weight, e.name, e.id, m.order_id, m.completed
             from mesos m
             inner join exercises e on m.exercise_id = e.id
             where m.day_id = %s and m.week_id = %s and m.meso_id = %s and e.name = %s and m.user_id = %s
@@ -155,35 +155,47 @@ for i in range(len(exercises)):
         weight = workout[i][2]
         exercise_id = workout[i][4]
         order_id = workout[i][5]
+        completed = workout[i][6]
 
-        completed = []
+        completed_boxes = []
         cols = st.columns(4)
         with cols[0]:
             st.write(f'Set: {set_id + 1}')
-        with cols[1]:
-            weight = st.number_input('Weight',
-                                     label_visibility='collapsed',
-                                     placeholder=f'Weight: {prev_weight}',
-                                     value=None,
-                                     key=f'weight{exercise_name, set_id}',
-                                     step=.5)
-        with cols[2]:
-            reps = st.number_input('Reps',
-                                   label_visibility='collapsed',
-                                   placeholder=f'Reps: {prev_reps}',
-                                   value=None,
-                                   key=f'reps{exercise_name, set_id}',
-                                   step=1)
-        with cols[3]:
-            completed.append(st.checkbox('Complete', key=f'completed{exercise_name, set_id}'))
 
-        if all(completed):
-            query = '''
-                    update mesos
-                    set reps = %s, weight = %s, completed = 1, date_completed = now()
-                    where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s and user_id = %s
-                    '''
-            conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name, user_id))
+        with cols[1]:
+            if completed == 0:
+                weight = st.number_input('Weight',
+                                         label_visibility='collapsed',
+                                         placeholder=f'Weight: {prev_weight}',
+                                         value=None,
+                                         key=f'weight{exercise_name, set_id}',
+                                         step=.5)
+            else:
+                st.write(f'Weight: {weight}')
+
+        with cols[2]:
+            if completed == 0:
+                reps = st.number_input('Reps',
+                                       label_visibility='collapsed',
+                                       placeholder=f'Reps: {prev_reps}',
+                                       value=None,
+                                       key=f'reps{exercise_name, set_id}',
+                                       step=1)
+            else:
+                st.write(f'Reps: {reps}')
+
+        with cols[3]:
+            if completed == 0:
+                box = st.checkbox('Complete', key=f'completed{exercise_name, set_id}')
+
+                if box:
+                    completed_boxes.append(box)
+                    query = '''
+                            update mesos
+                            set reps = %s, weight = %s, completed = 1, date_completed = now()
+                            where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s and user_id = %s
+                            '''
+                    conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name, user_id))
 
     # Formatting with columns
     set_cols = st.columns([2, 15])
@@ -222,11 +234,11 @@ st.write('###')
 @st.dialog("Workout Completed")
 def complete_workout():
     if st.button("View Past Workouts"):
-        st.switch_page('02_statistics/Previous_Workouts.py')
+        st.switch_page('pages/03_Previous_Workouts.py')
 
 
 if st.button('Complete Workout'):
-    if all(completed):
+    if all(completed_boxes):
         complete_workout()
     else:
         st.toast('Complete all sets', icon="⚠️")
