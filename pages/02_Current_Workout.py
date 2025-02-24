@@ -1,5 +1,5 @@
 from helpers.connection import MySQLDatabase
-from Login import login
+from helpers.login import login
 import streamlit as st
 
 if st.session_state.get("authentication_status"):
@@ -12,8 +12,11 @@ else:
 conn = MySQLDatabase()
 
 # Get Users to populate current meso
-user_name = st.session_state['username']
-user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
+if 'username' in st.session_state and st.session_state['username'] is not None:
+    user_name = st.session_state['username']
+    user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
+else:
+    st.stop()
 
 
 # Get Meso for the selected User

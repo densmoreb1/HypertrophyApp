@@ -4,8 +4,6 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 
-st.set_page_config(layout='wide')
-
 
 def login():
     with open('.streamlit/config.yml') as file:
@@ -26,7 +24,7 @@ def login():
     st.session_state["config"] = config
 
     try:
-        authenticator.login(location="main", key="login-demo-app-home")
+        authenticator.login()
     except Exception as e:
         st.error(e)
 
@@ -34,6 +32,3 @@ def login():
         authenticator.logout(location="sidebar", key="logout-demo-app-home")
     elif st.session_state["authentication_status"] is False:
         st.error("Username/password is incorrect")
-
-
-login()

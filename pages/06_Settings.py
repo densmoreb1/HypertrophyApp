@@ -1,5 +1,5 @@
 from helpers.connection import MySQLDatabase
-from Login import login
+from helpers.login import login
 import streamlit as st
 
 if st.session_state.get("authentication_status"):
@@ -12,24 +12,31 @@ else:
 conn = MySQLDatabase()
 
 # Add a user
-st.write('## Add a User')
-user = st.text_input('Username').lower()
 
-query = 'select name from users'
-sql = conn.execute_query(query)
-names = [u[0] for u in sql]
 
-if user != '':
-    if user not in names:
-        query = 'insert into users (name) values (%s)'
-        conn.execute_query(query, (user,))
+def add_user():
+    st.write('## Add a User')
+    user = st.text_input('Username').lower()
 
-        query = 'select id from users where name = %s'
-        id = conn.execute_query(query, (user,))[0][0]
-        st.toast(f'User "{user}" was created with id of {id}')
+    query = 'select name from users'
+    sql = conn.execute_query(query)
+    names = [u[0] for u in sql]
+
+    if user != '':
+        if user not in names:
+            query = 'insert into users (name) values (%s)'
+            conn.execute_query(query, (user,))
+
+            query = 'select id from users where name = %s'
+            id = conn.execute_query(query, (user,))[0][0]
+            st.toast(f'User "{user}" was created with id of {id}')
+        else:
+            query = 'select id from users where name = %s'
+            id = conn.execute_query(query, (user,))[0][0]
+            st.toast(f'User "{user}" already exists with id of {id}')
     else:
-        query = 'select id from users where name = %s'
-        id = conn.execute_query(query, (user,))[0][0]
-        st.toast(f'User "{user}" already exists with id of {id}')
-else:
-    st.stop()
+        st.stop()
+
+
+if 'admin' in st.session_state['roles']:
+    add_user()
