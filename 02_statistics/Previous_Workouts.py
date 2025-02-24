@@ -34,8 +34,8 @@ else:
     st.stop()
 
 # Get the completed day_ids
-query = 'select distinct day_id from mesos where completed = 1 and meso_id = %s and week_id = %s order by day_id'
-sql = conn.execute_query(query, (meso_id, week_id))
+query = 'select distinct day_id from mesos where completed = 1 and meso_id = %s and week_id = %s and user_id = %s order by day_id'
+sql = conn.execute_query(query, (meso_id, week_id, user_id))
 days = [str(d[0] + 1) for d in sql]
 
 day_tabs = st.tabs(days)

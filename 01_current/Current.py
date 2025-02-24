@@ -24,12 +24,12 @@ else:
 
 # Get the first uncompleted workout
 # Get week_id
-query = 'select min(week_id) from mesos where completed = 0 and meso_id = %s'
-week_id = conn.execute_query(query, (meso_id,))[0][0]
+query = 'select min(week_id) from mesos where completed = 0 and meso_id = %s and user_id = %s'
+week_id = conn.execute_query(query, (meso_id, user_id))[0][0]
 
 # Get day_id
-query = 'select min(day_id) from mesos where completed = 0 and meso_id = %s and week_id = %s'
-day_id = conn.execute_query(query, (meso_id, week_id))[0][0]
+query = 'select min(day_id) from mesos where completed = 0 and meso_id = %s and week_id = %s and user_id = %s'
+day_id = conn.execute_query(query, (meso_id, week_id, user_id))[0][0]
 
 
 # Get the exercises
@@ -57,10 +57,10 @@ def change_exercise(exercise_name, exercise_id):
     query = '''
             update mesos m
             set m.exercise_id = %s
-            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and m.exercise_id = %s
+            where m.day_id = %s and m.week_id = %s and m.meso_id = %s and m.exercise_id = %s and user_id = %s
             '''
     if st.button('Confirm'):
-        conn.execute_query(query, (updated_exercise_id, day_id, week_id, meso_id, exercise_id))
+        conn.execute_query(query, (updated_exercise_id, day_id, week_id, meso_id, exercise_id, user_id))
         st.rerun()
 
 
@@ -75,7 +75,7 @@ def exercise_history(exercise_name, exercise_id):
     sql = conn.execute_query(query, (exercise_id, user_id))
     for i in range(len(sql)):
         history_meso = sql[i][0]
-        st.write(f'## {history_meso}')
+        st.markdown(f'## <ins>{history_meso}</ins>', unsafe_allow_html=True)
 
         history = '''
                 select distinct week_id, day_id, date_completed
@@ -171,9 +171,9 @@ for i in range(len(exercises)):
             query = '''
                     update mesos
                     set reps = %s, weight = %s, completed = 1, date_completed = now()
-                    where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s
+                    where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s and user_id = %s
                     '''
-            conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name))
+            conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name, user_id))
 
     # Formatting with columns
     set_cols = st.columns([2, 15])
@@ -188,10 +188,10 @@ for i in range(len(exercises)):
     if remove_set:
         query = '''
                 delete from mesos
-                where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s
+                where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s and user_id = %s
                 '''
-        conn.execute_query(query, (set_id, day_id, week_id, exercise_id, meso_name))
-        conn.execute_query(query, (set_id, day_id, week_id + 1, exercise_id, meso_name))
+        conn.execute_query(query, (set_id, day_id, week_id, exercise_id, meso_name, user_id))
+        conn.execute_query(query, (set_id, day_id, week_id + 1, exercise_id, meso_name, user_id))
         st.rerun()
 
     if add_set:
