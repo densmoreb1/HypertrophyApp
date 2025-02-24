@@ -1,4 +1,3 @@
-from helpers.connection import MySQLDatabase
 import streamlit as st
 import streamlit_authenticator as stauth
 import yaml
@@ -15,10 +14,6 @@ def login():
         config['cookie']['key'],
         config['cookie']['expiry_days']
     )
-
-    conn = MySQLDatabase()
-    sql = conn.execute_query('select distinct name from users')
-    users = [s[0] for s in sql]
 
     st.session_state["authenticator"] = authenticator
     st.session_state["config"] = config
