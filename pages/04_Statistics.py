@@ -1,12 +1,20 @@
 from helpers.connection import MySQLDatabase
+from Login import login
 import streamlit as st
 import pandas as pd
+
+if st.session_state.get("authentication_status"):
+    authenticator = st.session_state.get("authenticator")
+    authenticator.logout(location="sidebar", key="stats_logout")
+    authenticator.login(location="unrendered", key="stats_logout")
+else:
+    login()
 
 st.write('# Statistics')
 
 conn = MySQLDatabase()
 
-user_name = st.session_state.role
+user_name = st.session_state['username']
 user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')

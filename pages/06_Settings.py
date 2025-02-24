@@ -1,5 +1,13 @@
 from helpers.connection import MySQLDatabase
+from Login import login
 import streamlit as st
+
+if st.session_state.get("authentication_status"):
+    authenticator = st.session_state.get("authenticator")
+    authenticator.logout(location="sidebar", key="setting_logout")
+    authenticator.login(location="unrendered", key="setting_logout")
+else:
+    login()
 
 conn = MySQLDatabase()
 
