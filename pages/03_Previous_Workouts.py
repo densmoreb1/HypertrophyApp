@@ -2,17 +2,18 @@ from helpers.connection import MySQLDatabase
 from helpers.login import login
 import streamlit as st
 
+# Login
 if st.session_state.get("authentication_status"):
     authenticator = st.session_state.get("authenticator")
-    authenticator.logout(location="sidebar", key="add_logout")
-    authenticator.login(location="unrendered", key="add_logout")
+    authenticator.logout(location="sidebar", key="previous_logout")
+    authenticator.login(location="unrendered", key="previous_logout")
 else:
     login()
 
-
 conn = MySQLDatabase()
 
-# Get Users to populate current meso
+
+# Get the current user
 if 'username' in st.session_state and st.session_state['username'] is not None:
     user_name = st.session_state['username']
     user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
@@ -25,6 +26,8 @@ query = 'select distinct name, meso_id from mesos where user_id = %s order by me
 sql = conn.execute_query(query, (user_id,))
 mesos = [g[0] for g in sql]
 
+
+# Check if there are no mesos for this user
 if len(mesos) > 0:
     meso_name = st.selectbox('Mesos', mesos)
     meso_id = conn.execute_query('select meso_id from mesos where name = %s', (meso_name,))[0][0]
@@ -43,6 +46,7 @@ if len(weeks) > 0:
 else:
     st.write('You have not completed a workout yet')
     st.stop()
+
 
 # Get the completed day_ids
 query = 'select distinct day_id from mesos where completed = 1 and meso_id = %s and week_id = %s and user_id = %s order by day_id'

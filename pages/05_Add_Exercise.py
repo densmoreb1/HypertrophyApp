@@ -2,6 +2,7 @@ from helpers.connection import MySQLDatabase
 from helpers.login import login
 import streamlit as st
 
+# Login
 if st.session_state.get("authentication_status"):
     authenticator = st.session_state.get("authenticator")
     authenticator.logout(location="sidebar", key="add_logout")
@@ -10,6 +11,7 @@ else:
     login()
 
 conn = MySQLDatabase()
+
 
 st.write('# Add Exercise')
 
