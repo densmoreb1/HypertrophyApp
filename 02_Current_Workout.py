@@ -12,11 +12,8 @@ else:
 conn = MySQLDatabase()
 
 # Get Users to populate current meso
-if 'username' in st.session_state and st.session_state['username'] is not None:
-    user_name = st.session_state['username']
-    user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
-else:
-    st.stop()
+user_name = st.session_state['username']
+user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
 
 # Get Meso for the selected User
@@ -29,6 +26,8 @@ if len(mesos) > 0:
     meso_id = conn.execute_query('select meso_id from mesos where name = %s', (meso_name,))[0][0]
 else:
     st.write('Looks you have not created a meso yet')
+    if st.button('Create a Meso'):
+        st.switch_page('pages/01_Create_Meso.py')
     st.stop()
 
 

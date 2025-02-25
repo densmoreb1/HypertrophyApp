@@ -15,11 +15,9 @@ st.write('# Statistics')
 conn = MySQLDatabase()
 
 # Get Users to populate current meso
-if 'username' in st.session_state and st.session_state['username'] is not None:
-    user_name = st.session_state['username']
-    user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
-else:
-    st.stop()
+user_name = st.session_state['username']
+user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
+
 
 groups_sql = conn.execute_query('select distinct muscle_group from exercises')
 muscle_groups = [g[0] for g in groups_sql]

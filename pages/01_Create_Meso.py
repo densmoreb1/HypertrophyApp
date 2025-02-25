@@ -20,11 +20,8 @@ muscle_groups = [g[0] for g in groups_sql]
 
 
 # Get the current user
-if 'username' in st.session_state and st.session_state['username'] is not None:
-    user_name = st.session_state['username']
-    user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
-else:
-    st.stop()
+user_name = st.session_state['username']
+user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
 
 st.write('# Create Meso')

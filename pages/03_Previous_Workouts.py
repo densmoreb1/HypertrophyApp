@@ -13,11 +13,8 @@ else:
 conn = MySQLDatabase()
 
 # Get Users to populate current meso
-if 'username' in st.session_state and st.session_state['username'] is not None:
-    user_name = st.session_state['username']
-    user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
-else:
-    st.stop()
+user_name = st.session_state['username']
+user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 
 
 # Get Meso for the selected User
