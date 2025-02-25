@@ -32,7 +32,7 @@ if len(mesos) > 0:
 else:
     st.write('Looks you have not created a meso yet')
     if st.button('Create a Meso'):
-        st.switch_page('pages/01_Create_Meso.py')
+        st.switch_page('pages/02_Create_Meso.py')
     st.stop()
 
 
