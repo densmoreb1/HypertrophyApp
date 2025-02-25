@@ -2,16 +2,18 @@ from helpers.connection import MySQLDatabase
 from helpers.login import login
 import streamlit as st
 
+# Login
 if st.session_state.get("authentication_status"):
     authenticator = st.session_state.get("authenticator")
-    authenticator.logout(location="sidebar", key="add_logout")
-    authenticator.login(location="unrendered", key="add_logout")
+    authenticator.logout(location="sidebar", key="current_logout")
+    authenticator.login(location="unrendered", key="current_logout")
 else:
     login()
 
 conn = MySQLDatabase()
 
-# Get Users to populate current meso
+
+# Get the current user
 if 'username' in st.session_state and st.session_state['username'] is not None:
     user_name = st.session_state['username']
     user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
@@ -29,6 +31,8 @@ if len(mesos) > 0:
     meso_id = conn.execute_query('select meso_id from mesos where name = %s', (meso_name,))[0][0]
 else:
     st.write('Looks you have not created a meso yet')
+    if st.button('Create a Meso'):
+        st.switch_page('pages/02_Create_Meso.py')
     st.stop()
 
 
@@ -36,6 +40,7 @@ else:
 # Get week_id
 query = 'select min(week_id) from mesos where completed = 0 and meso_id = %s and user_id = %s'
 week_id = conn.execute_query(query, (meso_id, user_id))[0][0]
+
 
 # Get day_id
 query = 'select min(day_id) from mesos where completed = 0 and meso_id = %s and week_id = %s and user_id = %s'

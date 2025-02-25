@@ -2,7 +2,6 @@ from helpers.connection import MySQLDatabase
 from helpers.login import login
 import streamlit as st
 
-
 # Login
 if st.session_state.get("authentication_status"):
     authenticator = st.session_state.get("authenticator")
@@ -14,17 +13,17 @@ else:
 conn = MySQLDatabase()
 
 
-# Get the available exercises
-groups_sql = conn.execute_query('select distinct muscle_group from exercises')
-muscle_groups = [g[0] for g in groups_sql]
-
-
 # Get the current user
 if 'username' in st.session_state and st.session_state['username'] is not None:
     user_name = st.session_state['username']
     user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
 else:
     st.stop()
+
+
+# Get the available exercises
+groups_sql = conn.execute_query('select distinct muscle_group from exercises')
+muscle_groups = [g[0] for g in groups_sql]
 
 
 st.write('# Create Meso')
