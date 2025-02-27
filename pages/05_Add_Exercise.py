@@ -13,10 +13,22 @@ else:
 conn = MySQLDatabase()
 
 
+# Get the current user
+if 'username' in st.session_state and st.session_state['username'] is not None:
+    user_name = st.session_state['username']
+    user_id = conn.execute_query('select id from users where name = %s', (user_name,))[0][0]
+else:
+    st.stop()
+
+
 st.write('# Add Exercise')
 
+query = 'select distinct muscle_group from exercises'
+sql = conn.execute_query(query)
+groups = [u[0] for u in sql]
+
 name = st.text_input('Exercise Name').lower()
-group = st.text_input('Muscle Group').lower()
+group = st.selectbox('Muscle Group', groups)
 result = st.button('Create Exercise')
 
 query = 'select name from exercises'
