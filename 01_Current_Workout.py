@@ -37,12 +37,12 @@ else:
 
 # Get the first uncompleted workout
 # Get week_id
-query = "select min(week_id) from mesos where completed = 0 and meso_id = %s and user_id = %s"
+query = "select min(week_id) from mesos where completed_day = 0 and meso_id = %s and user_id = %s"
 week_id = conn.execute_query(query, (meso_id, user_id))[0][0]
 
 
 # Get day_id
-query = "select min(day_id) from mesos where completed = 0 and meso_id = %s and week_id = %s and user_id = %s"
+query = "select min(day_id) from mesos where completed_day = 0 and meso_id = %s and week_id = %s and user_id = %s"
 day_id = conn.execute_query(query, (meso_id, week_id, user_id))[0][0]
 
 
@@ -195,7 +195,21 @@ for i in range(len(exercises)):
 
         cols = st.columns(4)
         with cols[0]:
-            st.write(f"Set: {set_id + 1}")
+            text = ""
+            if completed == 1:
+                if prev_reps is not None:
+                    if reps is not None:
+                        prev_volume = prev_weight * prev_reps
+                        current_volume = weight * reps
+
+                        if current_volume >= prev_volume:
+                            text = ":dart:"
+                        else:
+                            text = ":arrow_lower_right:"
+                else:
+                    text = ":dart:"
+
+            st.write(f"Set: {set_id + 1} {text}")
 
         with cols[1]:
             if completed == 0:
@@ -225,15 +239,14 @@ for i in range(len(exercises)):
 
         with cols[3]:
             if completed == 0:
-                box = st.checkbox("Complete", key=f"completed{exercise_name, set_id}")
-
-                if box:
+                if st.button("Complete Set", key=f"completed{exercise_name, set_id}"):
                     query = """
                             update mesos
                             set reps = %s, weight = %s, completed = 1, date_completed = now()
                             where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s and user_id = %s
                             """
                     conn.execute_query(query, (reps, weight, set_id, day_id, week_id, exercise_id, meso_name, user_id))
+                    st.rerun()
 
     # Formatting with columns
     set_cols = st.columns([2, 15])
@@ -242,13 +255,16 @@ for i in range(len(exercises)):
     with set_cols[1]:
         remove_set = st.button("Remove set", key=f"remove{exercise_name, set_id}")
 
+    max_week_query = "select max(week_id) from mesos where meso_id = %s and user_id = %s"
+    max_week_id = conn.execute_query(max_week_query, (meso_id, user_id))[0][0]
     if remove_set:
         query = """
                 delete from mesos
                 where set_id = %s and day_id = %s and week_id = %s and exercise_id = %s and name = %s and user_id = %s
                 """
-        conn.execute_query(query, (set_id, day_id, week_id, exercise_id, meso_name, user_id))
-        conn.execute_query(query, (set_id, day_id, week_id + 1, exercise_id, meso_name, user_id))
+        for i in range(week_id, max_week_id + 1):
+            conn.execute_query(query, (set_id, day_id, i, exercise_id, meso_name, user_id))
+
         st.rerun()
 
     if add_set:
@@ -257,8 +273,9 @@ for i in range(len(exercises)):
                 (meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
                 (%s,        %s,      %s,         0,     %s,    %s,    %s,       %s,          %s,     %s,      %s, now())
                 """
-        conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id))
-        conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, week_id + 1))
+        for i in range(week_id, max_week_id + 1):
+            conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, reps, weight, order_id, exercise_id, day_id, i))
+
         st.rerun()
 
 
@@ -269,4 +286,10 @@ if st.button("Add Exercise"):
 st.write("####")
 
 if st.button("Complete Workout"):
+    query = """
+            update mesos
+            set completed_day = 1
+            where day_id = %s and week_id = %s and meso_id = %s and user_id = %s
+            """
+    conn.execute_query(query, (day_id, week_id, meso_id, user_id))
     st.switch_page("pages/03_Previous_Workouts.py")
