@@ -5,6 +5,8 @@ from helpers.dialogs import change_exercise
 from helpers.dialogs import add_exercise
 from helpers.dialogs import records
 from helpers.dialogs import enter_score
+from helpers.dialogs import weekly_volume
+from helpers.dialogs import end
 import streamlit as st
 
 # Login
@@ -198,6 +200,9 @@ for i in range(len(exercises)):
         for i in range(week_id, max_week_id + 1):
             conn.execute_query(query, (set_id, day_id, i, exercise_id, meso_name, user_id))
 
+        if week_id != 0:
+            weekly_volume(conn, user_id, meso_id, exercise_id, week_id)
+
         st.rerun()
 
     if add_set:
@@ -208,6 +213,9 @@ for i in range(len(exercises)):
                 """
         for i in range(week_id, max_week_id + 1):
             conn.execute_query(query, (meso_id, meso_name, user_id, set_id + 1, None, None, order_id, exercise_id, day_id, i))
+
+        if week_id != 0:
+            weekly_volume(conn, user_id, meso_id, exercise_id, week_id)
 
         st.rerun()
 
@@ -227,7 +235,6 @@ if st.button("Complete Workout"):
     set_count = conn.execute_query(query, (day_id, week_id, meso_id, user_id))[0][0]
 
     if set_count == max_set_count:
-
         query = """
                 update mesos
                 set completed_day = 1
@@ -237,3 +244,7 @@ if st.button("Complete Workout"):
         st.switch_page("pages/03_Previous_Workouts.py")
     else:
         st.toast("Complete all sets", icon="⚠️")
+
+
+if st.button("End Meso"):
+    end(conn, user_id, meso_id)
