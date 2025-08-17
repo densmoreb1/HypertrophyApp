@@ -1,0 +1,6 @@
+streamlit
+streamlit-authenticator
+mysql-connector-python
+pandas
+plotly
+

@@ -1,0 +1,7 @@
+__pycache__/
+certs/
+.env
+.venv
+logs*
+
+pyproject.toml
