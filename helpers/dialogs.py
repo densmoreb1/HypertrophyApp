@@ -15,6 +15,36 @@ def add_or_not(pump, soreness, effort):
     return False
 
 
+def possible_volume(conn, exercises):
+    sets = {}
+    for day_id, value in exercises.items():
+        for order_id in range(len(value)):
+            exercise_name = value[order_id]
+            query = """
+                    select muscle_group
+                    from exercises
+                    where name = %s
+                    """
+            sql = conn.execute_query(query, (exercise_name,))
+
+            if sql:
+                muscle_group = sql[0][0]
+            else:
+                return
+
+            # On average of 3 sets per exercise per muscle_group
+            if muscle_group in sets:
+                sets[muscle_group] += 3
+            else:
+                sets[muscle_group] = 3
+
+    sets = dict(sorted(sets.items(), key=lambda item: item[1], reverse=True))
+
+    st.write("### Possible Sets")
+    for group, count in sets.items():
+        st.write(f"{group.capitalize()}: {count}")
+
+
 def weekly_volume(conn, user_id, meso_id, exercise_id, week_id):
     query = "select muscle_group from exercises where id = %s"
     group = conn.execute_query(query, (exercise_id,))[0][0]
@@ -29,6 +59,10 @@ def weekly_volume(conn, user_id, meso_id, exercise_id, week_id):
             order by week_id
             """
     sql = conn.execute_query(query, (user_id, meso_id, group, week_id - 1, week_id))
+
+    if len(sql) < 2:
+        return
+
     last = int(sql[0][0])
     current = int(sql[1][0])
 
@@ -47,18 +81,34 @@ def end(conn, user_id, meso_id):
     st.write("Warning you are about to end the meso cycle early")
     st.write("This will delete sets that have not been completed")
     if st.button("Confirm"):
-        query = "delete from mesos where user_id = %s and meso_id = %s and completed = 0;"
+        query = (
+            "delete from mesos where user_id = %s and meso_id = %s and completed = 0;"
+        )
         conn.execute_query(query, (user_id, meso_id))
+        st.rerun()
 
 
 @st.dialog("Score")
-def enter_score(conn, meso_id, meso_name, user_id, set_id, order_id, exercise_id, day_id, week_id, max_week_id):
+def enter_score(
+    conn,
+    meso_id,
+    meso_name,
+    user_id,
+    set_id,
+    order_id,
+    exercise_id,
+    day_id,
+    week_id,
+    max_week_id,
+):
 
     st.write("Enter scores")
 
     mapping = {"None": 1, "Low": 2, "Medium": 3, "High": 4}
     if week_id != 0:
-        soreness = st.segmented_control("Soreness (from last workout)", options=mapping.keys(), key="sore")
+        soreness = st.segmented_control(
+            "Soreness (from last workout)", options=mapping.keys(), key="sore"
+        )
     else:
         soreness = "None"
 
@@ -71,13 +121,21 @@ def enter_score(conn, meso_id, meso_name, user_id, set_id, order_id, exercise_id
 
         if st.button("Enter"):
             if add_set:
-                query = """
-                        insert into mesos
-                        (meso_id, name, user_id, completed, completed_day, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
-                        (%s,        %s,      %s,         0,            0,     %s,   %s,     %s,       %s,          %s,     %s,      %s,      now())
-                        """
                 for i in range(week_id + 1, max_week_id + 1):
-                    conn.execute_query(query, (meso_id, meso_name, user_id, set_id, None, None, order_id, exercise_id, day_id, i))
+                    conn.insert_set(
+                        meso_id=meso_id,
+                        meso_name=meso_name,
+                        user_id=user_id,
+                        completed=0,
+                        completed_day=0,
+                        set_id=set_id,
+                        reps=None,
+                        weight=None,
+                        order_id=order_id,
+                        exercise_id=exercise_id,
+                        day_id=day_id,
+                        week_id=i,
+                    )
             st.rerun()
 
 
@@ -128,7 +186,7 @@ def records(conn, user_id, meso_id, exercise_id, exercise_name):
 
 
 @st.dialog("Add exercise")
-def add_exercise(conn, user_id, meso_id, day_id, week_id, meso_name):
+def add_exercise(conn, user_id, meso_id, day_id, week_id, meso_name, max_week_id):
 
     query = "select distinct muscle_group from exercises order by muscle_group"
     sql = conn.execute_query(query)
@@ -136,33 +194,64 @@ def add_exercise(conn, user_id, meso_id, day_id, week_id, meso_name):
 
     group = st.selectbox("Muscle Group", groups, index=None)
 
-    sql = conn.execute_query("select name from exercises where muscle_group = %s order by name", (group,))
+    sql = conn.execute_query(
+        "select name from exercises where muscle_group = %s order by name", (group,)
+    )
     exercise_selection = [e[0] for e in sql]
-    exercise = st.selectbox("Exercise", exercise_selection, index=None, placeholder="Exercise", label_visibility="collapsed")
+    exercise = st.selectbox(
+        "Exercise",
+        exercise_selection,
+        index=None,
+        placeholder="Exercise",
+        label_visibility="collapsed",
+    )
+    exercise_id = None
     if exercise:
-        exercise_id = conn.execute_query("select id from exercises where name = %s", (exercise,))[0][0]
+        exercise_id = conn.execute_query(
+            "select id from exercises where name = %s", (exercise,)
+        )[0][0]
 
     query = "select max(order_id) from mesos where user_id = %s and meso_id = %s and day_id = %s and week_id = %s"
     max_order_id = conn.execute_query(query, (user_id, meso_id, day_id, week_id))[0][0]
 
     if st.button("Confirm"):
-        insert_query = """
-                    insert into mesos
-                    (meso_id, name, user_id, completed, set_id, reps, weight, order_id, exercise_id, day_id, week_id, date_created) values
-                    (%s,        %s,      %s,        %s,     %s,   %s,     %s,       %s,          %s,     %s,      %s, now())
-                    """
-        conn.execute_query(insert_query, (meso_id, meso_name, user_id, 0, 0, None, None, max_order_id + 1, exercise_id, day_id, week_id))
+        for i in range(week_id, max_week_id + 1):
+            conn.insert_set(
+                meso_id=meso_id,
+                meso_name=meso_name,
+                user_id=user_id,
+                completed=0,
+                completed_day=0,
+                set_id=0,
+                reps=None,
+                weight=None,
+                order_id=max_order_id + 1,
+                exercise_id=exercise_id,
+                day_id=day_id,
+                week_id=i,
+            )
         st.rerun()
 
 
 @st.dialog("Change exercise")
-def change_exercise(exercise_name, exercise_id, conn, day_id, meso_id, user_id, week_id):
-    group = conn.execute_query("select muscle_group from exercises where id = %s order by muscle_group", (exercise_id,))[0][0]
-    sql = conn.execute_query("select name from exercises where muscle_group = %s order by name", (group,))
+def change_exercise(
+    exercise_name, exercise_id, conn, day_id, meso_id, user_id, week_id
+):
+    group = conn.execute_query(
+        "select muscle_group from exercises where id = %s order by muscle_group",
+        (exercise_id,),
+    )[0][0]
+    sql = conn.execute_query(
+        "select name from exercises where muscle_group = %s order by name", (group,)
+    )
     exercise_selection = [e[0] for e in sql]
 
-    updated_exercise = st.selectbox(f"{group.capitalize()} Exercises", exercise_selection)
-    updated_exercise_id = conn.execute_query("select id from exercises where name = %s", (updated_exercise,))[0][0]
+    updated_exercise = st.selectbox(
+        f"{group.capitalize()} Exercises", exercise_selection
+    )
+    updated_exercise_id = conn.execute_query(
+        "select id from exercises where name = %s", (updated_exercise,)
+    )[0][0]
 
     query = """
             update mesos m
@@ -170,7 +259,9 @@ def change_exercise(exercise_name, exercise_id, conn, day_id, meso_id, user_id, 
             where m.day_id = %s and m.meso_id = %s and m.exercise_id = %s and user_id = %s and week_id >= %s
             """
     if st.button("Confirm"):
-        conn.execute_query(query, (updated_exercise_id, day_id, meso_id, exercise_id, user_id, week_id))
+        conn.execute_query(
+            query, (updated_exercise_id, day_id, meso_id, exercise_id, user_id, week_id)
+        )
         st.rerun()
 
 
@@ -207,7 +298,10 @@ def exercise_history(exercise_name, exercise_id, user_id, conn, past_mesos_count
                             where exercise_id = %s and user_id = %s and completed = 1 and name = %s and week_id = %s and day_id = %s
                             order by set_id
                             """
-            history_reps_sql = conn.execute_query(history_reps, (exercise_id, user_id, history_meso, history_week, history_day))
+            history_reps_sql = conn.execute_query(
+                history_reps,
+                (exercise_id, user_id, history_meso, history_week, history_day),
+            )
             date = datetime.datetime.strftime(history_reps_sql[0][3], "%m/%d/%Y")
 
             st.write(f"### {date} Week {history_week + 1} Day {history_day + 1}")

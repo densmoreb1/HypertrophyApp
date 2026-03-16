@@ -4,42 +4,98 @@ import os
 
 class MySQLDatabase:
     def __init__(self):
-        self.config = {"user": "root", "password": os.environ["MYSQL_PASSWORD"], "host": "mysql", "database": "fitness"}
-        self.connection = None
-        self.cursor = None
-
+        self.config = {
+            "user": "root",
+            "password": os.environ["MYSQL_PASSWORD"],
+            "host": "mysql",
+            "database": "fitness",
+        }
         self.connect()
 
     def connect(self):
-        """Establish a connection to the MySQL database."""
         try:
             self.connection = connector.connect(**self.config)
-            if self.connection.is_connected():
-                # print('Connected to MySQL database')
-                self.cursor = self.connection.cursor()
+            self.cursor = self.connection.cursor()
         except connector.Error as e:
             print("Error while connecting to MySQL", e)
-            self.connection = None
+            raise
 
-    def execute_query(self, query, params=None):
-        """Execute a single query."""
-        if self.connection is None:
-            raise Exception("Connection not established.")
+    def execute_query(
+        self,
+        query: str,
+        params: tuple | None = None,
+    ) -> list:
+        self.cursor.execute(query, params if params else ())
+        if query.strip().upper().startswith("SELECT"):
+            return self.cursor.fetchall()
+        else:
+            self.connection.commit()
+            return []
 
-        try:
-            self.cursor.execute(query, params)
-            if query.strip().upper().startswith("SELECT"):
-                return self.cursor.fetchall()
-            else:
-                self.connection.commit()
-                return self.cursor.rowcount
-        except connector.Error as e:
-            return f"Error executing query: {e}"
+    def insert_set(
+        self,
+        meso_id,
+        meso_name,
+        user_id,
+        completed,
+        completed_day,
+        set_id,
+        reps,
+        weight,
+        order_id,
+        exercise_id,
+        day_id,
+        week_id,
+    ):
+        query = """
+                INSERT INTO mesos
+                (
+                    meso_id,
+                    name,
+                    user_id,
+                    completed,
+                    completed_day,
+                    set_id,
+                    reps,
+                    weight,
+                    order_id,
+                    exercise_id,
+                    day_id,
+                    week_id,
+                    date_created
+                )
+                VALUES
+                (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    NOW()
+                )
+                """
 
-    def close(self):
-        """Close the cursor and connection."""
-        if self.cursor:
-            self.cursor.close()
-        if self.connection and self.connection.is_connected():
-            self.connection.close()
-            print("MySQL connection is closed")
+        self.execute_query(
+            query,
+            (
+                meso_id,
+                meso_name,
+                user_id,
+                completed,
+                completed_day,
+                set_id,
+                reps,
+                weight,
+                order_id,
+                exercise_id,
+                day_id,
+                week_id,
+            ),
+        )
