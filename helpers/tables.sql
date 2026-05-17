@@ -19,6 +19,16 @@ create table if not exists users (
 	unique (name)
 );
 
+create table if not exists templates (
+	id int auto_increment primary key,
+	name varchar(100),
+	day_id int,
+	muscle_group varchar(50),
+	order_id int,
+	date_created datetime,
+	unique (name, day_id, muscle_group)
+);
+
 create table if not exists mesos (
 	id int auto_increment primary key,
 	completed int,
