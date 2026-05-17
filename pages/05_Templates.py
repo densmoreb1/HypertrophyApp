@@ -28,6 +28,7 @@ else:
 
 name = st.text_input("Name of Template").lower()
 days = st.selectbox("Days per week", (1, 2, 3, 4, 5, 6, 7))
+edit_template = None
 
 button_cols = st.columns([1, 7])
 with button_cols[0]:
@@ -46,34 +47,62 @@ groups_sql = conn.execute_query(
 )
 muscle_groups = [g[0] for g in groups_sql]
 
-meso = {}
-cols = st.columns(days, border=True)
-for i in range(len(cols)):
-    if days >= i:
+template_name = None
+if edit_template:
+    template_name = st.selectbox("Past Templates", templates)
+else:
+    meso_name = None
+
+if not template_name:
+    meso = {}
+    cols = st.columns(days, border=True)
+    for i in range(len(cols)):
+        if days >= i:
+            with cols[i]:
+                st.write(f"### Day {i + 1}")
+
+                exercises_per = st.selectbox(
+                    label="How many exercises?",
+                    options=(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                    key=f"per{i}{name}",
+                )
+
+                final_exercise_list = []
+                for r in range(exercises_per):
+                    muscle = st.selectbox(
+                        label=f"Muscle {r + 1}",
+                        options=muscle_groups,
+                        index=None,
+                        key=f"muscle{i}{r}{name}",
+                        placeholder="Muscle Group",
+                    )
+
+                    final_exercise_list.append(muscle)
+
+                    meso[i] = final_exercise_list
+else:
+    query = """
+            select name, day_id, muscle_group, order_id
+            from templates
+            where name = %s
+            """
+    current_template = conn.execute_query(query, (template_name,))
+
+    st.write(current_template)
+
+    meso = {}
+    cols = st.columns(len(current_template), border=True)
+    for i in range(len(cols)):
         with cols[i]:
             st.write(f"### Day {i + 1}")
 
             exercises_per = st.selectbox(
                 label="How many exercises?",
                 options=(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                index=len(current_template[i]),
                 key=f"per{i}{name}",
             )
 
-            final_exercise_list = []
-            for r in range(exercises_per):
-                muscle = st.selectbox(
-                    label=f"Muscle {r + 1}",
-                    options=muscle_groups,
-                    index=None,
-                    key=f"muscle{i}{r}{name}",
-                    placeholder="Muscle Group",
-                )
-
-                final_exercise_list.append(muscle)
-
-                meso[i] = final_exercise_list
-
-st.write(meso)
 
 if create and name != "":
     previous_templates = conn.execute_query(
